@@ -2284,14 +2284,6 @@
         updateMovementIndicator();
         updateKPIs();
         
-        // Atualiza painéis e monitores locais se estiverem visíveis
-        if (typeof renderManagerKitchenMonitor === 'function') {
-          renderManagerKitchenMonitor();
-        }
-        if (typeof renderCozinhaPanel === 'function' && currentUser && currentUser.role === 'cozinha') {
-          renderCozinhaPanel();
-        }
-        
         // Se estiver em rede, sincroniza com o servidor local
         if (isHttp) {
           saveStateToServer();
@@ -3612,7 +3604,6 @@
       
       const comandaItem = list[itemIdx];
       const catalogItem = appState.cardapio.find(i => i.nome === comandaItem.nome);
-      const mesa = appState.mesas.find(m => m.id === mesaId);
       
       if (factor > 0) {
         if (catalogItem && catalogItem.controlarEstoque) {
@@ -3624,24 +3615,6 @@
           updateCatalogItemDisponibilidade(catalogItem);
         }
         comandaItem.qtd += factor;
-        
-        // Envia comida automaticamente para a fila da cozinha se não for bebida
-        if (catalogItem && !isItemBebida(catalogItem)) {
-          const pedidoCozinha = {
-            id: Date.now(),
-            mesaId: mesaId,
-            mesaNome: mesa.nome,
-            garcom: currentUser ? currentUser.name : 'Caixa',
-            timestamp: Date.now(),
-            status: 'pendente',
-            itens: [{ nome: comandaItem.nome, qtd: factor, preco: comandaItem.preco, obs: '' }],
-            inicioPreparo: null,
-            fimPreparo: null
-          };
-          if (!appState.pedidosCozinha) appState.pedidosCozinha = [];
-          appState.pedidosCozinha.push(pedidoCozinha);
-          showToast(`🍳 ${comandaItem.nome} enviado para a Cozinha!`, 'success');
-        }
       } else if (factor < 0) {
         const unitsToRemove = Math.min(comandaItem.qtd, Math.abs(factor));
         if (catalogItem && catalogItem.controlarEstoque) {
@@ -3655,6 +3628,7 @@
         list.splice(itemIdx, 1);
       }
       
+      const mesa = appState.mesas.find(m => m.id === mesaId);
       const sum = list.reduce((acc, item) => acc + (item.qtd * item.preco), 0);
       mesa.total = sum;
       
@@ -3717,24 +3691,19 @@
         <div style="border-top:1px solid var(--color-border); padding-top:15px; margin-top:10px;">
           <h4 style="margin-bottom:10px;">Lista de Pedidos</h4>
           <div class="order-items" id="modalOrderItemsList">
-            ${list.length === 0 ? '<small class="muted">Nenhum consumo registrado.</small>' : list.map((item, idx) => {
-              const catalogItem = appState.cardapio.find(c => c.nome === item.nome);
-              const isFood = catalogItem && !isItemBebida(catalogItem);
-              const badgeHtml = isFood ? `<span style="background:rgba(242,144,56,0.15); color:var(--color-warning); font-size:10px; padding:2px 6px; border-radius:var(--radius-full); margin-left:6px; font-weight:bold;">🍳 Cozinha</span>` : '';
-              return `
-                <div class="order-item" style="padding: 10px;">
-                  <div>
-                    <strong>${item.qtd}x ${item.nome}${badgeHtml}</strong>
-                    <small>${money(item.preco)}</small>
-                  </div>
-                  <div style="display:flex; align-items:center; gap: 8px;">
-                    <strong>${money(item.qtd * item.preco)}</strong>
-                    <button class="btn sm danger" style="padding:2px 6px;" onclick="changeItemQtyFromModal(${id}, ${idx}, -1)">-</button>
-                    <button class="btn sm primary" style="padding:2px 6px;" onclick="changeItemQtyFromModal(${id}, ${idx}, 1)">+</button>
-                  </div>
+            ${list.length === 0 ? '<small class="muted">Nenhum consumo registrado.</small>' : list.map((item, idx) => `
+              <div class="order-item" style="padding: 10px;">
+                <div>
+                  <strong>${item.qtd}x ${item.nome}</strong>
+                  <small>${money(item.preco)}</small>
                 </div>
-              `;
-            }).join('')}
+                <div style="display:flex; align-items:center; gap: 8px;">
+                  <strong>${money(item.qtd * item.preco)}</strong>
+                  <button class="btn sm danger" style="padding:2px 6px;" onclick="changeItemQtyFromModal(${id}, ${idx}, -1)">-</button>
+                  <button class="btn sm primary" style="padding:2px 6px;" onclick="changeItemQtyFromModal(${id}, ${idx}, 1)">+</button>
+                </div>
+              </div>
+            `).join('')}
           </div>
         </div>
 
@@ -3851,35 +3820,11 @@
       
       mesa.total = list.reduce((acc, item) => acc + (item.qtd * item.preco), 0);
       
-      // Envia comida automaticamente para a fila da cozinha se não for bebida
-      let isFood = false;
-      if (catalogItem && !isItemBebida(catalogItem)) {
-        isFood = true;
-        const pedidoCozinha = {
-          id: Date.now(),
-          mesaId: mesaId,
-          mesaNome: mesa.nome,
-          garcom: currentUser ? currentUser.name : 'Caixa',
-          timestamp: Date.now(),
-          status: 'pendente',
-          itens: [{ nome: itemName, qtd: 1, preco: price, obs: '' }],
-          inicioPreparo: null,
-          fimPreparo: null
-        };
-        if (!appState.pedidosCozinha) appState.pedidosCozinha = [];
-        appState.pedidosCozinha.push(pedidoCozinha);
-      }
-      
       saveState();
       renderMesas();
       openMesaModal(mesaId);
       if (selected === mesaId) handleMesaClick(mesaId);
-      
-      if (isFood) {
-        showToast(`${itemName} lançado e enviado para a Cozinha!`, 'success');
-      } else {
-        showToast(`${itemName} lançado na mesa!`, 'success');
-      }
+      showToast(`${itemName} lançado na mesa!`, 'success');
     }
 
     function changeItemQtyFromModal(mesaId, idx, factor) {
