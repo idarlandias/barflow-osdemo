@@ -1163,13 +1163,13 @@
           <!-- Rascunho de Pedidos para Cozinha -->
           <div id="garcomDraftSection" class="hidden" style="border-top: 1px solid rgba(242,144,56,0.3); padding-top: 14px; margin-top: 10px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
-              <h4 style="font-family:var(--font-display); font-size:var(--text-sm); color:var(--color-warning);">&#x1F37D; Rascunho &mdash; Enviar à Cozinha</h4>
+              <h4 id="garcomDraftTitle" style="font-family:var(--font-display); font-size:var(--text-sm); color:var(--color-warning);">&#x1F37D; Rascunho &mdash; Enviar &agrave; Cozinha</h4>
               <span id="garcomDraftTotal" style="font-weight:700; color:var(--color-primary); font-size:var(--text-sm);">R$ 0,00</span>
             </div>
             <div id="garcomDraftList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
               <!-- Items de rascunho injetados via JS -->
             </div>
-            <button class="btn kitchen" style="width:100%; padding:12px;" onclick="enviarPedidoCozinha()">
+            <button id="btnEnviarCozinha" class="btn kitchen" style="width:100%; padding:12px;" onclick="enviarPedidoCozinha()">
               &#x1F680; Enviar Pedido &agrave; Cozinha
             </button>
           </div>
@@ -5373,6 +5373,28 @@
       const total = draft.reduce(function(acc, i) { return acc + (i.qtd * i.preco); }, 0);
       const totalEl = document.getElementById('garcomDraftTotal');
       if (totalEl) totalEl.textContent = money(total);
+
+      // Verifica se o rascunho possui itens de comida/petisco (preparado)
+      const temComida = draft.some(function(item) {
+        const catalogItem = appState.cardapio.find(function(c) { return c.nome === item.nome; });
+        return !catalogItem || catalogItem.categoria !== 'Bebidas';
+      });
+
+      const btnKitchen = document.getElementById('btnEnviarCozinha');
+      const draftTitle = document.getElementById('garcomDraftTitle');
+      if (btnKitchen && draftTitle) {
+        if (temComida) {
+          draftTitle.innerHTML = '&#x1F37D; Rascunho &mdash; Enviar &agrave; Cozinha';
+          draftTitle.style.color = 'var(--color-warning)';
+          btnKitchen.innerHTML = '&#x1F680; Enviar Pedido &agrave; Cozinha';
+          btnKitchen.className = 'btn kitchen';
+        } else {
+          draftTitle.innerHTML = '&#x1F6D2; Rascunho de Bebidas';
+          draftTitle.style.color = 'var(--color-primary)';
+          btnKitchen.innerHTML = '&#x2705; Confirmar e Lan&ccedil;ar Bebidas';
+          btnKitchen.className = 'btn primary';
+        }
+      }
     }
 
     function changeDraftItemQty(mesaId, idx, factor) {
