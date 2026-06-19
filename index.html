@@ -1311,16 +1311,6 @@
         <article class="card kpi"><span class="muted">Estoque crítico</span><strong id="kpiEstoqueCritico">0 item(ns)</strong></article>
       </section>
 
-      <!-- === MELHORIA 2: Card de faturamento por hora === -->
-      <div id="hourlySalesCard" class="card panel hidden" style="margin-top: var(--space-4); margin-bottom: var(--space-4); padding: var(--space-4);">
-        <div class="section-title" style="margin-bottom: var(--space-4);">
-          <h3>Faturamento por hora (hoje)</h3>
-        </div>
-        <div id="hourlySalesChartContainer" style="height: 180px; width: 100%;">
-          <canvas id="hourlySalesChart" style="width: 100%; height: 180px;"></canvas>
-        </div>
-      </div>
-
       <!-- View: Painel do Garçom (Mobile View) -->
       <section id="garcomPanel" class="view hidden" style="display: flex; flex-direction: column; gap: var(--space-4);">
         <!-- Top bar garçom -->
@@ -1470,8 +1460,6 @@
             <h3>Controle de mesas completo</h3>
             <span class="muted">Clique em qualquer mesa para detalhar consumo e configurações</span>
           </div>
-          <!-- === MELHORIA 3: Filtro rápido por setor === -->
-          <div id="mesasSectoresFilter" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-4); margin-top: 5px;"></div>
           <div class="mesas-grid" id="mesasGridFull"></div>
         </article>
       </section>
@@ -1508,8 +1496,6 @@
             <h3>Cardápio do Estabelecimento</h3>
             <button class="btn primary" id="newMenuItem">Novo Produto</button>
           </div>
-          <!-- === MELHORIA 4: Abas de Categorias === -->
-          <div id="menuCategoriesTabs" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-4); margin-top: var(--space-3);"></div>
           <div class="menu-list" id="menuList"></div>
         </article>
       </section>
@@ -1534,8 +1520,6 @@
               </div>
             </div>
             <div class="cash-list" id="cashList"></div>
-            <!-- MELHORIA 6: Card de Comparativo Semanal -->
-            <div id="cashWeeklyComparisonContainer" style="margin-top: 15px; padding: 12px; border-radius: var(--radius-md); background: var(--color-surface-offset); border: 1px solid var(--color-border); font-size: var(--text-sm);"></div>
           </article>
           
           <article class="card panel" style="display: flex; flex-direction: column; gap: var(--space-5);">
@@ -1602,12 +1586,6 @@
               <span class="muted">Comandas Concluídas</span>
               <h2 id="kpiEstoqueRelComandas">0</h2>
             </div>
-          </div>
-
-          <!-- MELHORIA 7: Gráfico de Faturamento Diário no Período -->
-          <div id="reportDailySalesChartCard" class="card panel hidden" style="margin-bottom: var(--space-5); padding: var(--space-4);">
-            <div class="section-title"><h3>Faturamento Diário no Período</h3></div>
-            <div id="reportDailySalesChartContainer" style="min-height: 200px; width: 100%;"></div>
           </div>
 
           <div class="layout" style="grid-template-columns: 1.2fr 1fr; gap: var(--space-5);">
@@ -1731,7 +1709,6 @@
             <div class="btn-row">
               <button class="btn" id="btnManualExport">Download Backup (.json)</button>
               <button class="btn" id="btnManualImportTrigger">Importar Arquivo (.json)</button>
-              <button class="btn" onclick="exportComandasToCSV()">Exportar Comandas do Dia (CSV)</button>
               <input type="file" id="inputImportFile" accept=".json" class="hidden">
             </div>
           </article>
@@ -1744,30 +1721,6 @@
             <p class="muted" style="margin-bottom: var(--space-4)">Histórico de backups criados localmente na memória do seu navegador. Clique para restaurar para um estado anterior.</p>
             <div class="order-items" id="checkpointList" style="flex-grow: 1; max-height: 350px; overflow-y: auto; gap: 8px;">
               <div class="order-item"><small>Nenhum checkpoint interno disponível.</small></div>
-            </div>
-          </article>
-
-          <!-- MELHORIA 9: Nuvem — Backup Google Drive -->
-          <article class="card panel" style="display: flex; flex-direction: column; gap: var(--space-3); grid-column: 1 / -1; margin-top: var(--space-4);">
-            <div class="section-title">
-              <h3>Backup em Nuvem (Google Drive) ☁️</h3>
-            </div>
-            <p class="muted">Salve seus backups automáticos ou manuais diretamente na sua conta do Google Drive com facilidade e segurança.</p>
-            <div class="form-group" style="margin-bottom:12px;">
-              <label>Google OAuth Client ID</label>
-              <input type="text" id="cfgGoogleClientId" class="form-control" placeholder="Seu Client ID do Google Cloud Console..." onchange="updateGoogleClientId(this.value)">
-            </div>
-            <div style="background: var(--color-surface-offset); padding: var(--space-3); border-radius: var(--radius-md); font-size: var(--text-xs); color: var(--color-text-muted); display:flex; flex-direction:column; gap:6px;">
-              <strong>Como configurar:</strong>
-              <ol style="margin-left: 15px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px;">
-                <li>Crie um projeto no Google Cloud Console.</li>
-                <li>Configure a tela de consentimento OAuth e adicione o escopo <code>https://www.googleapis.com/auth/drive.file</code>.</li>
-                <li>Crie uma credencial de ID do cliente OAuth 2.0 (Aplicativo Web).</li>
-                <li>Adicione a URL do BarFlow OS em "Origens JavaScript autorizadas" e "URIs de redirecionamento autorizados".</li>
-              </ol>
-            </div>
-            <div class="btn-row" style="margin-top:10px;">
-              <button class="btn primary" id="btnGoogleAuth" onclick="startGoogleDriveAuth()">Conectar Google Drive</button>
             </div>
           </article>
 
@@ -1846,7 +1799,6 @@
                   <tr style="border-bottom: 2px solid var(--color-border); color: var(--color-text-muted);">
                     <th style="padding: 12px 8px;">Nome</th>
                     <th style="padding: 12px 8px;">Cargo / Função</th>
-                    <th style="padding: 12px 8px; text-align: center;">Meta Diária</th>
                     <th style="padding: 12px 8px;">Senha</th>
                     <th style="padding: 12px 8px; text-align: right;">Ações</th>
                   </tr>
@@ -2323,44 +2275,10 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
         console.log('Cardápio padrão atualizado com catálogo de produtos completo.');
       }
-
-      // === MELHORIA 1: Sanitização de novos campos ===
-      if (appState.cardapio) {
-        appState.cardapio.forEach(item => {
-          item.estoqueMinimo = item.estoqueMinimo ?? 5;
-          item.estoqueAtual = item.estoqueAtual ?? item.estoque ?? null;
-          item.estoque = item.estoqueAtual; // sincronização
-          item.foto = item.foto ?? "";
-          item.indisponivel_temp = item.indisponivel_temp ?? false;
-          item.complementos = item.complementos ?? [];
-        });
-      }
-      if (appState.mesas) {
-        appState.mesas.forEach(m => {
-          m.setor = m.setor ?? "Geral";
-          m.horaAbertura = m.horaAbertura ?? null;
-        });
-      }
-      if (appState.usuarios) {
-        appState.usuarios.forEach(u => {
-          if (u.role === 'garcom') {
-            u.meta = u.meta ?? 0;
-          }
-        });
-      }
-      if (appState.configuracoes) {
-        appState.configuracoes.googleClientId = appState.configuracoes.googleClientId ?? "";
-      }
     }
 
     function saveState() {
       try {
-        // === MELHORIA 1: Sincronização de estoque para estoqueAtual ===
-        if (appState.cardapio) {
-          appState.cardapio.forEach(item => {
-            item.estoqueAtual = item.estoque;
-          });
-        }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
         hasMovementSinceLastBackup = true;
         updateMovementIndicator();
@@ -3196,21 +3114,10 @@
       tbody.innerHTML = filtered.map(item => {
         let statusBadge = '';
         let stockLabel = '';
-        let isCritical = false;
-        
         if (item.controlarEstoque) {
           const qty = item.estoque || 0;
           const min = item.estoqueMinimo || 0;
-          isCritical = qty <= min;
-          
-          stockLabel = `
-            <div style="display:flex; justify-content:center; align-items:center; gap:4px;">
-              <input type="number" value="${qty}" class="form-control" style="width:60px; text-align:center; padding:2px 4px; font-weight:bold;" onchange="updateInlineEstoque(${item.idx}, 'estoque', this.value)">
-              <span class="muted">/</span>
-              <input type="number" value="${min}" class="form-control" style="width:60px; text-align:center; padding:2px 4px;" onchange="updateInlineEstoque(${item.idx}, 'estoqueMinimo', this.value)">
-            </div>
-          `;
-          
+          stockLabel = `${qty} / ${min}`;
           if (qty <= 0) {
             statusBadge = `<span class="status danger" style="padding:2px 8px; border-radius:4px; font-weight:700">ESGOTADO</span>`;
           } else if (qty <= min) {
@@ -3223,10 +3130,8 @@
           statusBadge = `<span class="status info" style="padding:2px 8px; border-radius:4px; font-weight:700; background:var(--color-surface-offset); border-color:var(--color-border); color:var(--color-text-muted)">Ilimitado</span>`;
         }
 
-        const rowBgStyle = isCritical ? 'background-color: rgba(224, 94, 108, 0.15);' : '';
-
         return `
-          <tr style="${rowBgStyle} border-bottom: 1px solid var(--color-border);">
+          <tr style="border-bottom: 1px solid var(--color-border);">
             <td style="padding: var(--space-3); font-weight:600">${item.nome}</td>
             <td style="padding: var(--space-3); color: var(--color-text-muted)">${item.categoria}</td>
             <td style="padding: var(--space-3)">${item.controlarEstoque ? 'Sim' : 'Não'}</td>
@@ -3239,24 +3144,6 @@
         `;
       }).join('');
     }
-
-    window.updateInlineEstoque = function(idx, field, val) {
-      const item = appState.cardapio[idx];
-      if (item) {
-        let numericVal = parseInt(val);
-        if (isNaN(numericVal)) numericVal = 0;
-        if (numericVal < 0) numericVal = 0;
-        
-        item[field] = numericVal;
-        if (field === 'estoque') {
-          item.estoqueAtual = numericVal;
-        }
-        
-        saveState();
-        renderEstoque();
-        updateKPIs();
-      }
-    };
 
     function openAjustarEstoqueModal(idx) {
       const item = appState.cardapio[idx];
@@ -3344,100 +3231,39 @@
       showToast(`Estoque de "${item.nome}" atualizado!`, 'success');
     }
 
-    function getDatesInPeriod(activeDate, period) {
-      const dates = new Set();
-      if (!activeDate) return dates;
-      if (period === 'hoje') {
-        dates.add(activeDate);
-      } else if (period === 'semana') {
-        const parts = activeDate.split('-');
-        const todayDate = new Date(parts[0], parts[1] - 1, parts[2]);
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(todayDate.getTime() - i * 24 * 60 * 60 * 1000);
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          dates.add(`${year}-${month}-${day}`);
-        }
-      } else if (period === 'mes') {
-        const parts = activeDate.split('-');
-        const prefix = `${parts[0]}-${parts[1]}-`;
-        const temp = [];
-        (appState.historicoDias || []).forEach(d => {
-          if (d.dataOperacao && d.dataOperacao.startsWith(prefix)) {
-            temp.push(d.dataOperacao);
-          }
-        });
-        temp.push(activeDate);
-        temp.sort().forEach(d => dates.add(d));
-      }
-      return dates;
-    }
-
     function populateReportDates() {
       const sel = document.getElementById('reportDateSelect');
       if (!sel) return;
-      
       const dates = new Set();
       (appState.historicoDias || []).forEach(d => { if (d.dataOperacao) dates.add(d.dataOperacao); });
       if (appState.operacao && appState.operacao.diaAberto && appState.operacao.dataOperacao) {
         dates.add(appState.operacao.dataOperacao);
       }
       const sorted = [...dates].sort((a, b) => b.localeCompare(a));
-      
       const prev = sel.value;
-      
-      let html = '';
-      html += '<option value="hoje">Hoje</option>';
-      html += '<option value="semana">Esta Semana (Últimos 7 dias)</option>';
-      html += '<option value="mes">Este Mês (Mês operacional ativo)</option>';
-      
-      sorted.forEach(d => {
-        const isHoje = appState.operacao && appState.operacao.diaAberto && appState.operacao.dataOperacao === d;
-        html += `<option value="${d}">${d.split('-').reverse().join('/')}${isHoje ? ' (hoje)' : ''}</option>`;
-      });
-      
-      sel.innerHTML = html;
-      
-      if (prev && sel.querySelector(`option[value="${prev}"]`)) {
-        sel.value = prev;
-      } else {
-        sel.value = 'hoje';
+      if (sorted.length === 0) {
+        sel.innerHTML = '<option value="">Nenhum dia disponível</option>';
+        return;
       }
+      sel.innerHTML = sorted.map(d => {
+        const isHoje = appState.operacao && appState.operacao.diaAberto && appState.operacao.dataOperacao === d;
+        return `<option value="${d}">${d.split('-').reverse().join('/')}${isHoje ? ' (hoje)' : ''}</option>`;
+      }).join('');
+      if (prev && sorted.includes(prev)) sel.value = prev;
     }
 
     function renderRelatorios() {
       const sel = document.getElementById('reportDateSelect');
-      let selectVal = sel ? sel.value : 'hoje';
-      if (!selectVal) selectVal = 'hoje';
-
-      const activeDate = appState.operacao && appState.operacao.dataOperacao;
+      const activeDate = (sel && sel.value) || (appState.operacao && appState.operacao.dataOperacao);
       if (!activeDate) return;
 
-      let targetDates = new Set();
-      let labelText = '';
-
-      if (selectVal === 'hoje') {
-        targetDates.add(activeDate);
-        labelText = `Hoje - ${activeDate.split('-').reverse().join('/')}`;
-      } else if (selectVal === 'semana') {
-        targetDates = getDatesInPeriod(activeDate, 'semana');
-        labelText = 'Esta Semana (Últimos 7 dias)';
-      } else if (selectVal === 'mes') {
-        targetDates = getDatesInPeriod(activeDate, 'mes');
-        const parts = activeDate.split('-');
-        labelText = `Este Mês (${parts[1]}/${parts[0]})`;
-      } else {
-        targetDates.add(selectVal);
-        labelText = selectVal.split('-').reverse().join('/');
-      }
-
+      const dateLabel = activeDate.split('-').reverse().join('/');
       const elLbl1 = document.getElementById('labelRelFaturamento');
-      if (elLbl1) elLbl1.textContent = `Faturamento de Vendas (${labelText})`;
+      if (elLbl1) elLbl1.textContent = `Faturamento de Vendas (${dateLabel})`;
       const elLbl2 = document.getElementById('labelRelItens');
-      if (elLbl2) elLbl2.textContent = `Total Itens Vendidos (${labelText})`;
+      if (elLbl2) elLbl2.textContent = `Total Itens Vendidos (${dateLabel})`;
 
-      const comandasHoje = (appState.historicoComandas || []).filter(c => targetDates.has(c.dataOperacao));
+      const comandasHoje = (appState.historicoComandas || []).filter(c => c.dataOperacao === activeDate);
 
       const faturamentoTotal = comandasHoje.reduce((sum, c) => sum + (c.total || 0), 0);
       const ticketMédio = comandasHoje.length > 0 ? (faturamentoTotal / comandasHoje.length) : 0;
@@ -3498,10 +3324,9 @@
         const sortedProducts = Object.values(productSales).sort((a, b) => b.qtd - a.qtd);
         
         if (sortedProducts.length === 0) {
-          reportList.innerHTML = `<div class="order-item"><small class="muted">Nenhuma venda realizada neste período.</small></div>`;
+          reportList.innerHTML = `<div class="order-item"><small class="muted">Nenhuma venda realizada hoje.</small></div>`;
         } else {
-          const top5Products = sortedProducts.slice(0, 5);
-          reportList.innerHTML = top5Products.map((p, idx) => {
+          reportList.innerHTML = sortedProducts.map((p, idx) => {
             const catalogItem = appState.cardapio.find(m => m.nome === p.nome);
             const stockText = catalogItem && catalogItem.controlarEstoque 
               ? `<small class="muted" style="display:block;">Estoque atual: ${catalogItem.estoque || 0} un.</small>`
@@ -3569,7 +3394,7 @@
 
         const garcomRows = Object.values(garcomData);
         if (garcomRows.length === 0) {
-          gList.innerHTML = `<tr><td colspan="4" style="padding: 12px 8px; text-align: center;"><small class="muted">Sem comissões geradas para o período selecionado.</small></td></tr>`;
+          gList.innerHTML = `<tr><td colspan="4" style="padding: 12px 8px; text-align: center;"><small class="muted">Sem comissões geradas para o dia selecionado.</small></td></tr>`;
         } else {
           gList.innerHTML = garcomRows.map(g => `
             <tr style="border-bottom: 1px solid var(--color-border);">
@@ -3579,39 +3404,6 @@
               <td style="padding: 12px 8px; text-align: right; font-weight: bold; color: var(--color-success);">${money(g.comissao)}</td>
             </tr>
           `).join('');
-        }
-      }
-
-      const chartCard = document.getElementById('reportDailySalesChartCard');
-      if (chartCard) {
-        if (targetDates.size > 1) {
-          chartCard.classList.remove('hidden');
-          const dailyData = [];
-          const sortedDates = [...targetDates].sort();
-          sortedDates.forEach(dStr => {
-            const dayRecord = appState.historicoDias ? appState.historicoDias.find(h => h.dataOperacao === dStr) : null;
-            let val = 0;
-            if (dayRecord) {
-              val = dayRecord.faturamentoBruto || 0;
-            } else if (dStr === activeDate) {
-              const dailyTrans = appState.caixa ? appState.caixa.filter(t => t.dataOperacao === dStr && t.valor > 0) : [];
-              val = dailyTrans.reduce((sum, item) => sum + item.valor, 0);
-            }
-            const isHoje = activeDate === dStr;
-            const parts = dStr.split('-');
-            const label = isHoje ? 'Hoje' : `${parts[2]}/${parts[1]}`;
-            dailyData.push({
-              label: label,
-              value: val,
-              color: isHoje ? 'var(--color-primary)' : 'var(--color-text-muted)'
-            });
-          });
-          
-          setTimeout(() => {
-            drawBarChart('reportDailySalesChartContainer', dailyData);
-          }, 0);
-        } else {
-          chartCard.classList.add('hidden');
         }
       }
     }
@@ -3652,20 +3444,10 @@
       const kpiFaturamento = document.getElementById('kpiFaturamento');
       if (kpiFaturamento) kpiFaturamento.textContent = money(totalCaixaPositivo);
       
-      // === MELHORIA 1: Estoque Crítico Aprimorado ===
-      const criticalItems = appState.cardapio ? appState.cardapio.filter(i => i.estoqueAtual !== null && i.estoqueAtual <= (i.estoqueMinimo ?? 5)) : [];
-      const estoqueCriticoCount = criticalItems.length;
-      
-      let mostUrgentText = '';
-      if (estoqueCriticoCount > 0) {
-        const sorted = [...criticalItems].sort((a, b) => (a.estoqueAtual || 0) - (b.estoqueAtual || 0));
-        const mostUrgent = sorted[0];
-        mostUrgentText = `<br><span class="muted" style="font-size: var(--text-xs); font-weight: normal;">Mais urgente: ${mostUrgent.nome} (${mostUrgent.estoqueAtual})</span>`;
-      }
-      
+      const estoqueCriticoCount = appState.cardapio ? appState.cardapio.filter(i => i.controlarEstoque && (i.estoque || 0) <= (i.estoqueMinimo || 0)).length : 0;
       const kpiEstoqueCritico = document.getElementById('kpiEstoqueCritico');
       if (kpiEstoqueCritico) {
-        kpiEstoqueCritico.innerHTML = `${estoqueCriticoCount} item(ns)${mostUrgentText}`;
+        kpiEstoqueCritico.textContent = `${estoqueCriticoCount} item(ns)`;
         kpiEstoqueCritico.style.color = estoqueCriticoCount > 0 ? 'var(--color-warning)' : 'var(--color-text)';
       }
 
@@ -3685,36 +3467,17 @@
         const pedElem = document.getElementById('garcomKpiPedidos');
         if (pedElem) pedElem.textContent = ordersAtivos + ' ativo(s)';
       }
-
-      // === MELHORIA 2: Exibir/Ocultar e Renderizar o Gráfico de Vendas por Hora ===
-      const hourlyCard = document.getElementById('hourlySalesCard');
-      if (hourlyCard) {
-        if (dailyTransactions.length >= 2) {
-          hourlyCard.classList.remove('hidden');
-          setTimeout(() => drawHourlySalesChart(dailyTransactions), 0);
-        } else {
-          hourlyCard.classList.add('hidden');
-        }
-      }
     }
 
     function mesaCard(m, compact = false) {
       const atendenteLabel = m.status === 'ocupada' && m.atendidaPor ? `<br><small style="color:var(--color-primary);font-weight:bold;">Atendido por: ${m.atendidaPor}</small>` : '';
-      // === MELHORIA 3: Tempo de Ocupação ===
-      let timeOpenLabel = '';
-      if (m.status === 'ocupada' && m.horaAbertura) {
-        const diffMs = Date.now() - m.horaAbertura;
-        const diffHrs = Math.floor(diffMs / 3600000);
-        const diffMins = Math.floor((diffMs % 3600000) / 60000);
-        timeOpenLabel = `<br><small class="muted" style="display:inline-block; margin-top:2px;">Aberta há ${diffHrs}h ${diffMins}m</small>`;
-      }
       return `
         <div class="mesa ${m.status}" onclick="handleMesaClick(${m.id})">
           <div style="display:flex; justify-content:space-between; gap:10px; align-items:center">
             <strong><span class="mesa-status-dot ${m.status}"></span>${m.nome}</strong>
             <span class="status ${m.status}">${m.status}</span>
           </div>
-          <small class="muted">${m.pessoas ? m.pessoas + ' pessoas' : 'Livre'} • ${m.total ? money(m.total) : 'R$ 0,00'}${timeOpenLabel}${atendenteLabel}</small>
+          <small class="muted">${m.pessoas ? m.pessoas + ' pessoas' : 'Livre'} • ${m.total ? money(m.total) : 'R$ 0,00'}${atendenteLabel}</small>
           <div class="btn-row" style="margin-top: 8px;">
             <button class="btn sm ${m.status === 'livre' ? 'primary' : ''}" onclick="event.stopPropagation(); quickOpenMesa(${m.id})">
               ${m.status === 'livre' ? 'Abrir' : 'Gerenciar'}
@@ -3722,14 +3485,6 @@
           </div>
         </div>`;
     }
-
-    // === MELHORIA 3: Variável global para filtro de setor ===
-    var activeSectorFilter = 'Todos';
-
-    window.setActiveSectorFilter = function(sec) {
-      activeSectorFilter = sec;
-      renderMesas();
-    };
 
     function renderMesas() {
       const gridHome = document.getElementById('mesasGrid');
@@ -3747,22 +3502,8 @@
       if (gridHome) {
         gridHome.innerHTML = sortedMesas.slice(0, 8).map(m => mesaCard(m, true)).join('');
       }
-      
-      // === MELHORIA 3: Filtro de setor ===
-      const sectors = ['Todos', ...new Set(appState.mesas.map(m => m.setor || 'Geral'))];
-      const filterContainer = document.getElementById('mesasSectoresFilter');
-      if (filterContainer) {
-        filterContainer.innerHTML = sectors.map(sec => {
-          const isActive = activeSectorFilter === sec;
-          return `<button class="btn sm ${isActive ? 'primary' : ''}" style="padding: 6px 14px; border-radius: var(--radius-full); font-size: 11px;" onclick="setActiveSectorFilter('${sec.replace(/'/g, "\\'")}')">${sec}</button>`;
-        }).join('');
-      }
-
       if (gridFull) {
-        const filteredFull = activeSectorFilter === 'Todos'
-          ? sortedMesas
-          : sortedMesas.filter(m => (m.setor || 'Geral') === activeSectorFilter);
-        gridFull.innerHTML = filteredFull.map(m => mesaCard(m, false)).join('');
+        gridFull.innerHTML = sortedMesas.map(m => mesaCard(m, false)).join('');
       }
       
       updateKPIs();
@@ -3922,7 +3663,7 @@
       renderMesas();
     }
 
-     function quickOpenMesa(id) {
+    function quickOpenMesa(id) {
       const mesa = appState.mesas.find(m => m.id === id);
       if (mesa.status === 'livre') {
         if (!appState.operacao || !appState.operacao.diaAberto) {
@@ -3933,8 +3674,6 @@
         mesa.pessoas = 1;
         mesa.total = 0;
         mesa.atendidaPor = 'Caixa';
-        // === MELHORIA 3: horaAbertura ===
-        mesa.horaAbertura = Date.now();
         appState.pedidos[id] = [];
         saveState();
         showToast(`${mesa.nome} aberta com sucesso!`, 'success');
@@ -3965,18 +3704,6 @@
         <div class="form-group">
           <label>Pessoas Ocupando</label>
           <input type="number" id="modalMesaPessoas" class="form-control" value="${mesa.pessoas || 1}" min="0" onchange="updateMesaPessoasFromModal(${id})">
-        </div>
-        
-        <div style="border-top:1px solid var(--color-border); padding-top:15px; margin-top:10px;">
-          <h4 style="margin-bottom:10px;">Configurações da Mesa</h4>
-          <div class="form-group" style="margin-bottom: 10px;">
-            <label>Nome da Mesa</label>
-            <input type="text" id="modalMesaNome" class="form-control" value="${mesa.nome || ''}" onchange="updateMesaNomeFromModal(${id}, this.value)">
-          </div>
-          <div class="form-group">
-            <label>Setor da Mesa</label>
-            <input type="text" id="modalMesaSetor" class="form-control" value="${mesa.setor || 'Geral'}" onchange="updateMesaSetorFromModal(${id}, this.value)">
-          </div>
         </div>
         
         <div style="border-top:1px solid var(--color-border); padding-top:15px; margin-top:10px;">
@@ -4029,7 +3756,6 @@
     function updateMesaStatusFromModal(id) {
       const select = document.getElementById('modalMesaStatus');
       const mesa = appState.mesas.find(m => m.id === id);
-      const prevStatus = mesa.status;
       mesa.status = select.value;
       if (mesa.status === 'livre') {
         returnTableStockToCardapio(id);
@@ -4037,13 +3763,9 @@
         mesa.total = 0;
         appState.pedidos[id] = [];
         delete mesa.atendidaPor;
-        delete mesa.horaAbertura;
       } else {
         if (!mesa.atendidaPor) {
           mesa.atendidaPor = 'Caixa';
-        }
-        if (mesa.status === 'ocupada' && prevStatus !== 'ocupada') {
-          mesa.horaAbertura = Date.now();
         }
       }
       saveState();
@@ -4061,28 +3783,6 @@
       renderMesas();
       if (selected === id) handleMesaClick(id);
     }
-
-    window.updateMesaNomeFromModal = function(id, val) {
-      const mesa = appState.mesas.find(m => m.id === id);
-      if (mesa) {
-        mesa.nome = val.trim() || `Mesa ${String(id).padStart(2, '0')}`;
-        saveState();
-        renderMesas();
-        if (selected === id) {
-          const selectedText = document.getElementById('selectedMesa');
-          if (selectedText) selectedText.textContent = mesa.nome;
-        }
-      }
-    };
-
-    window.updateMesaSetorFromModal = function(id, val) {
-      const mesa = appState.mesas.find(m => m.id === id);
-      if (mesa) {
-        mesa.setor = val.trim() || 'Geral';
-        saveState();
-        renderMesas();
-      }
-    };
 
     function handleMenuSearch(mesaId, query) {
       const resultsDiv = document.getElementById('autocompleteResults');
@@ -4203,60 +3903,19 @@
       
       const title = `Fechamento de Conta: Mesa ${String(id).padStart(2,'0')}`;
       const htmlBody = `
-        <div style="margin-bottom:15px; display:flex; gap:12px; align-items:center;">
-          <label style="font-weight:bold;">Tipo de Fechamento:</label>
-          <label style="cursor:pointer; display:flex; align-items:center; gap:4px;">
-            <input type="radio" name="payTypeRadio" value="integral" checked onchange="togglePayType(${id}, 'integral')"> Integral
-          </label>
-          <label style="cursor:pointer; display:flex; align-items:center; gap:4px;">
-            <input type="radio" id="paySplitByItemsRadio" name="payTypeRadio" value="itens" onchange="togglePayType(${id}, 'itens')"> Por Itens
-          </label>
-        </div>
-
-        <div id="payItemsContainer" style="display:none; margin-bottom:15px; max-height:200px; overflow-y:auto; border:1px solid var(--color-border); padding:10px; border-radius:var(--radius-md); background:var(--color-surface-offset);">
-          <h4 style="margin-bottom:8px; font-size:var(--text-sm);">Selecione os itens a serem pagos agora:</h4>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            ${(appState.pedidos[id] || []).map((item, idx) => `
-              <div style="display:flex; justify-content:space-between; align-items:center; background:var(--color-surface-2); padding:6px 10px; border-radius:var(--radius-sm);">
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:var(--text-sm);">
-                  <input type="checkbox" class="pay-item-check" data-index="${idx}" onchange="updatePayItemsTotal(${id})">
-                  <span>${item.nome} (${money(item.preco)})</span>
-                </label>
-                <div style="display:flex; align-items:center; gap:6px; font-size:var(--text-sm);">
-                  <input type="number" class="pay-item-qty form-control" data-index="${idx}" value="${item.qtd}" min="1" max="${item.qtd}" style="width:60px; padding:2px 4px; text-align:center;" onchange="updatePayItemsTotal(${id})">
-                  <span>/ ${item.qtd}</span>
-                </div>
-              </div>
-            `).join('')}
-            ${valorCouvertIndividual > 0 ? `
-              <div style="display:flex; justify-content:space-between; align-items:center; background:var(--color-surface-2); padding:6px 10px; border-radius:var(--radius-sm); margin-top:4px;">
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:var(--text-sm);">
-                  <span>Couvert Artístico de</span>
-                  <input type="number" id="payCouvertQty" class="form-control" value="0" min="0" max="${mesa.pessoas || 1}" style="width:50px; padding:2px 4px; text-align:center;" onchange="updatePayItemsTotal(${id})">
-                  <span>pessoa(s)</span>
-                </label>
-                <strong id="payCouvertValText">${money(0)}</strong>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-
         <div style="background: var(--color-surface-offset); padding: var(--space-4); border-radius: var(--radius-md); display:flex; flex-direction:column; gap:10px;">
-          <div style="display:flex; justify-content:space-between;"><span>Consumo:</span><strong id="paySubtotalVal">${money(sub)}</strong></div>
-          <div id="payCouvertRow" style="display:flex; justify-content:space-between; ${totalCouvert > 0 ? '' : 'display:none;'}">
-            <span id="payCouvertLabel">Couvert Artístico (${mesa.pessoas}x ${money(valorCouvertIndividual)}):</span>
-            <strong id="payCouvertVal">${money(totalCouvert)}</strong>
-          </div>
+          <div style="display:flex; justify-content:space-between;"><span>Consumo:</span><strong>${money(sub)}</strong></div>
+          ${totalCouvert > 0 ? '<div style="display:flex; justify-content:space-between;"><span>Couvert Artístico (' + mesa.pessoas + 'x R$ ' + money(valorCouvertIndividual) + '):</span><strong>' + money(totalCouvert) + '</strong></div>' : ''}
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span>Serviço (${pctServico}%):</span>
             <div>
-              <input type="checkbox" id="payIncludeService" checked onchange="updatePayItemsTotal(${id})"> Incluir
+              <input type="checkbox" id="payIncludeService" checked onchange="togglePayServiceCharge(${sub}, ${taxaServico}, ${totalCouvert})"> Incluir
               <strong id="payServiceChargeText" style="margin-left:8px;">${money(taxaServico)}</strong>
             </div>
           </div>
           <hr style="border:0; border-top:1px solid var(--color-border);">
           <div style="display:flex; justify-content:space-between; font-size:var(--text-lg)">
-            <span>Total a Pagar:</span>
+            <span>Total da Conta:</span>
             <strong id="payTotalAmountText" style="color:var(--color-primary);">${money(totalComTaxa)}</strong>
           </div>
         </div>
@@ -4313,230 +3972,93 @@
       openModal(title, htmlBody, footerHtml);
     }
 
-    window.togglePayType = function(id, type) {
-      const container = document.getElementById('payItemsContainer');
-      if (container) {
-        container.style.display = (type === 'itens') ? 'block' : 'none';
-      }
-      if (type === 'integral') {
-        const checks = document.querySelectorAll('.pay-item-check');
-        checks.forEach(c => c.checked = false);
-        const couvertQty = document.getElementById('payCouvertQty');
-        if (couvertQty) couvertQty.value = 0;
-      }
-      updatePayItemsTotal(id);
-    };
-
-    window.updatePayItemsTotal = function(id) {
-      const mesa = appState.mesas.find(m => m.id === id);
-      const isSplit = document.getElementById('paySplitByItemsRadio') && document.getElementById('paySplitByItemsRadio').checked;
-      
-      const valorCouvertIndividual = (appState.configuracoes && appState.configuracoes.couvert) || 0;
-      const pctServico = (appState.configuracoes && appState.configuracoes.taxaServico !== undefined) ? appState.configuracoes.taxaServico : 10.0;
-      
-      let sub = 0;
-      let couvert = 0;
-      
-      if (isSplit) {
-        const checks = document.querySelectorAll('.pay-item-check');
-        const qtyInputs = document.querySelectorAll('.pay-item-qty');
-        checks.forEach((chk, idx) => {
-          if (chk.checked) {
-            const qty = Math.min(appState.pedidos[id][idx].qtd, parseInt(qtyInputs[idx].value) || 1);
-            sub += qty * appState.pedidos[id][idx].preco;
-          }
-        });
-        
-        const couvertQty = document.getElementById('payCouvertQty');
-        const kCouvert = couvertQty ? (parseInt(couvertQty.value) || 0) : 0;
-        couvert = kCouvert * valorCouvertIndividual;
-        const payCouvertValText = document.getElementById('payCouvertValText');
-        if (payCouvertValText) payCouvertValText.textContent = money(couvert);
-      } else {
-        sub = mesa.total;
-        couvert = valorCouvertIndividual * (mesa.pessoas || 1);
-      }
-      
-      const payIncludeService = document.getElementById('payIncludeService');
-      const isServiceIncluded = payIncludeService ? payIncludeService.checked : true;
-      const tax = isServiceIncluded ? (sub * (pctServico / 100)) : 0;
-      
-      const total = sub + couvert + tax;
-      
-      const subValElem = document.getElementById('paySubtotalVal');
-      if (subValElem) subValElem.textContent = money(sub);
-      
-      const couvertRow = document.getElementById('payCouvertRow');
-      const couvertLabel = document.getElementById('payCouvertLabel');
-      const couvertVal = document.getElementById('payCouvertVal');
-      if (couvertRow) {
-        if (couvert > 0 || (!isSplit && valorCouvertIndividual > 0)) {
-          couvertRow.style.display = 'flex';
-          if (couvertLabel) {
-            if (isSplit) {
-              const couvertQty = document.getElementById('payCouvertQty');
-              const kCouvert = couvertQty ? (parseInt(couvertQty.value) || 0) : 0;
-              couvertLabel.textContent = `Couvert Artístico (${kCouvert}x ${money(valorCouvertIndividual)}):`;
-            } else {
-              couvertLabel.textContent = `Couvert Artístico (${mesa.pessoas}x ${money(valorCouvertIndividual)}):`;
-            }
-          }
-          if (couvertVal) couvertVal.textContent = money(couvert);
-        } else {
-          couvertRow.style.display = 'none';
-        }
-      }
-      
+    function togglePayServiceCharge(sub, tax, couvert) {
+      const checkbox = document.getElementById('payIncludeService');
       const serviceText = document.getElementById('payServiceChargeText');
-      if (serviceText) {
-        serviceText.textContent = money(tax);
-        serviceText.style.opacity = isServiceIncluded ? '1' : '0.4';
-      }
-      
       const totalText = document.getElementById('payTotalAmountText');
-      if (totalText) totalText.textContent = money(total);
       
+      const activeTotal = checkbox.checked ? (sub + tax + couvert) : (sub + couvert);
+      
+      serviceText.style.opacity = checkbox.checked ? '1' : '0.4';
+      totalText.textContent = money(activeTotal);
+
       updatePayDivision();
       updatePaySplit();
-    };
+    }
 
     function updatePayDivision() {
+      const checkbox = document.getElementById('payIncludeService');
       const input = document.getElementById('payDividePeople');
       const display = document.getElementById('payAmountPerPerson');
       const totalText = document.getElementById('payTotalAmountText');
       
-      if (totalText && input && display) {
-        const total = parseFloat(totalText.textContent.replace(/[^0-9,-]/g, '').replace(',', '.'));
-        const div = parseInt(input.value) || 1;
-        display.textContent = money(total / div);
-      }
+      const total = parseFloat(totalText.textContent.replace(/[^0-9,-]/g, '').replace(',', '.'));
+      const div = parseInt(input.value) || 1;
+      
+      display.textContent = money(total / div);
     }
 
     function updatePaySplit() {
       const totalText = document.getElementById('payTotalAmountText');
-      if (!totalText) return;
       const total = parseFloat(totalText.textContent.replace(/[^0-9,-]/g, '').replace(',', '.'));
       const ids = ['payValueDinheiro', 'payValuePix', 'payValueCredito', 'payValueDebito'];
       let sum = 0;
-      ids.forEach(id => { 
-        const el = document.getElementById(id);
-        if (el) sum += parseFloat(el.value) || 0; 
-      });
+      ids.forEach(id => { sum += parseFloat(document.getElementById(id).value) || 0; });
       const diff = total - sum;
       const label = document.getElementById('payRemainingLabel');
       const text = document.getElementById('payRemainingText');
-      if (label && text) {
-        if (Math.abs(diff) < 0.01) {
-          label.textContent = 'Confere ✓';
-          text.style.color = 'var(--color-success)';
-          text.textContent = money(0);
-        } else if (diff > 0) {
-          label.textContent = 'Restante:';
-          text.style.color = 'var(--color-warning)';
-          text.textContent = money(diff);
-        } else {
-          label.textContent = 'Excedente:';
-          text.style.color = 'var(--color-danger)';
-          text.textContent = money(Math.abs(diff));
-        }
+      if (Math.abs(diff) < 0.01) {
+        label.textContent = 'Confere ✓';
+        text.style.color = 'var(--color-success)';
+        text.textContent = money(0);
+      } else if (diff > 0) {
+        label.textContent = 'Restante:';
+        text.style.color = 'var(--color-warning)';
+        text.textContent = money(diff);
+      } else {
+        label.textContent = 'Excedente:';
+        text.style.color = 'var(--color-danger)';
+        text.textContent = money(Math.abs(diff));
       }
     }
 
     function fillRemainingInto(inputId) {
       const totalText = document.getElementById('payTotalAmountText');
-      if (!totalText) return;
       const total = parseFloat(totalText.textContent.replace(/[^0-9,-]/g, '').replace(',', '.'));
       const ids = ['payValueDinheiro', 'payValuePix', 'payValueCredito', 'payValueDebito'];
       let sumOthers = 0;
-      ids.forEach(id => { 
-        if (id !== inputId) {
-          const el = document.getElementById(id);
-          if (el) sumOthers += parseFloat(el.value) || 0;
-        }
-      });
+      ids.forEach(id => { if (id !== inputId) sumOthers += parseFloat(document.getElementById(id).value) || 0; });
       const remaining = Math.max(0, total - sumOthers);
-      const targetEl = document.getElementById(inputId);
-      if (targetEl) {
-        targetEl.value = remaining.toFixed(2);
-      }
+      document.getElementById(inputId).value = remaining.toFixed(2);
       updatePaySplit();
     }
 
     function confirmPayment(id) {
       const checkbox = document.getElementById('payIncludeService');
-      const payIncludeService = checkbox ? checkbox.checked : true;
       const mesa = appState.mesas.find(m => m.id === id);
-      const isSplit = document.getElementById('paySplitByItemsRadio') && document.getElementById('paySplitByItemsRadio').checked;
-      
+      const sub = mesa.total;
+
       const valorCouvertIndividual = (appState.configuracoes && appState.configuracoes.couvert) || 0;
+      const totalCouvert = valorCouvertIndividual * (mesa.pessoas || 1);
+
       const pctServico = (appState.configuracoes && appState.configuracoes.taxaServico !== undefined) ? appState.configuracoes.taxaServico : 10.0;
-      
-      let sub = 0;
-      let couvert = 0;
-      let itemsPaid = [];
-      let newPedidosList = [];
-      let paidCouvertQty = 0;
-      
-      if (isSplit) {
-        const checks = document.querySelectorAll('.pay-item-check');
-        const qtyInputs = document.querySelectorAll('.pay-item-qty');
-        const list = appState.pedidos[id] || [];
-        
-        checks.forEach((chk, idx) => {
-          const item = list[idx];
-          if (chk.checked) {
-            const qtyToPay = Math.min(item.qtd, parseInt(qtyInputs[idx].value) || 1);
-            const remainingQty = item.qtd - qtyToPay;
-            
-            itemsPaid.push({
-              nome: item.nome,
-              preco: item.preco,
-              qtd: qtyToPay,
-              obs: item.obs || ""
-            });
-            
-            if (remainingQty > 0) {
-              newPedidosList.push({
-                nome: item.nome,
-                preco: item.preco,
-                qtd: remainingQty,
-                obs: item.obs || ""
-              });
-            }
-          } else {
-            newPedidosList.push(JSON.parse(JSON.stringify(item)));
-          }
-        });
-        
-        const couvertQtyInput = document.getElementById('payCouvertQty');
-        paidCouvertQty = couvertQtyInput ? (parseInt(couvertQtyInput.value) || 0) : 0;
-        couvert = paidCouvertQty * valorCouvertIndividual;
-        sub = itemsPaid.reduce((sum, item) => sum + (item.preco * item.qtd), 0);
-      } else {
-        sub = mesa.total;
-        couvert = valorCouvertIndividual * (mesa.pessoas || 1);
-        itemsPaid = JSON.parse(JSON.stringify(appState.pedidos[id] || []));
-      }
-      
-      const tax = payIncludeService ? (sub * (pctServico / 100)) : 0;
-      const total = sub + couvert + tax;
-      
+      const tax = sub * (pctServico / 100);
+
+      const total = checkbox.checked ? (sub + tax + totalCouvert) : (sub + totalCouvert);
+
       const metodos = [
         { id: 'payValueDinheiro', tipo: 'Dinheiro' },
         { id: 'payValuePix', tipo: 'Pix' },
         { id: 'payValueCredito', tipo: 'Cartão crédito' },
         { id: 'payValueDebito', tipo: 'Cartão débito' }
       ];
-      
+
       const pagamentos = metodos
-        .map(m => {
-          const el = document.getElementById(m.id);
-          return { tipo: m.tipo, valor: el ? (parseFloat(el.value) || 0) : 0 };
-        })
+        .map(m => ({ tipo: m.tipo, valor: parseFloat(document.getElementById(m.id).value) || 0 }))
         .filter(p => p.valor > 0);
-        
+
       const somaPagamentos = pagamentos.reduce((s, p) => s + p.valor, 0);
-      
+
       if (pagamentos.length === 0) {
         showToast('Informe pelo menos uma forma de pagamento.', 'error');
         return;
@@ -4545,58 +4067,49 @@
         showToast(`Valores não conferem. Total: ${money(total)}, informado: ${money(somaPagamentos)}.`, 'error');
         return;
       }
-      
-      // Salva no caixa
+
+      // Salva no caixa associado ao dia operacional ativo — uma entrada por forma de pagamento usada
       pagamentos.forEach(p => {
         appState.caixa.push({
           tipo: p.tipo,
           valor: p.valor,
-          info: `Fechamento ${mesa.nome}${isSplit ? ' (Parcial por itens)' : ''} (Subtotal: ${money(sub)}, Couvert: ${money(couvert)}, Serviço: ${payIncludeService ? money(tax) : money(0)})${pagamentos.length > 1 ? ' — pagamento dividido' : ''}`,
+          info: `Fechamento ${mesa.nome} (Subtotal: ${money(sub)}, Couvert: ${money(totalCouvert)}, Serviço: ${checkbox.checked ? money(tax) : money(0)})${pagamentos.length > 1 ? ' — pagamento dividido' : ''}`,
           timestamp: Date.now(),
           dataOperacao: appState.operacao.dataOperacao
         });
       });
-      
+
       // Histórico de comanda
       appState.historicoComandas.push({
         id: Date.now(),
-        mesa: isSplit ? `${mesa.nome} (Parcial)` : mesa.nome,
+        mesa: mesa.nome,
         subtotal: sub,
-        couvert: couvert,
-        servico: payIncludeService ? tax : 0,
+        couvert: totalCouvert,
+        servico: checkbox.checked ? tax : 0,
         total: total,
         metodo: pagamentos.length > 1 ? 'Misto' : pagamentos[0].tipo,
         pagamentos: pagamentos,
-        itens: itemsPaid,
-        pessoas: isSplit ? paidCouvertQty : mesa.pessoas,
+        itens: JSON.parse(JSON.stringify(appState.pedidos[id])),
+        pessoas: mesa.pessoas,
         data: new Date().toLocaleString('pt-BR'),
         dataOperacao: appState.operacao.dataOperacao,
         garcom: mesa.atendidaPor || 'Não definido'
       });
       
-      if (isSplit && newPedidosList.length > 0) {
-        appState.pedidos[id] = newPedidosList;
-        mesa.total = newPedidosList.reduce((sum, item) => sum + (item.preco * item.qtd), 0);
-        mesa.pessoas = Math.max(1, (mesa.pessoas || 1) - paidCouvertQty);
-        showToast('Pagamento parcial confirmado. Mesa continua ocupada com os itens restantes.', 'success');
-      } else {
-        mesa.status = 'livre';
-        mesa.pessoas = 0;
-        mesa.total = 0;
-        delete mesa.atendidaPor;
-        delete mesa.horaAbertura;
-        appState.pedidos[id] = [];
-        showToast('Pagamento total concluído. Mesa liberada.', 'success');
-      }
+      // Limpar mesa
+      mesa.status = 'livre';
+      mesa.pessoas = 0;
+      mesa.total = 0;
+      delete mesa.atendidaPor;
+      appState.pedidos[id] = [];
       
-      closeModal();
       saveState();
-      
       if (currentUser && currentUser.role === 'garcom') {
         renderGarcomMesas();
       } else {
         renderMesas();
       }
+      closeModal();
       
       if (selected === id) {
         selected = null;
@@ -4804,19 +4317,9 @@
 
     function imprimirRelatorioPorDataSelecao() {
       const sel = document.getElementById('reportDateSelect');
-      let selectedDate = sel ? sel.value : null;
+      const selectedDate = sel ? sel.value : null;
       if (!selectedDate) {
         showToast('Por favor, selecione um período para imprimir.', 'error');
-        return;
-      }
-      
-      if (selectedDate === 'hoje') {
-        imprimirRelatorioCaixaAtivo();
-        return;
-      }
-      
-      if (selectedDate === 'semana' || selectedDate === 'mes') {
-        imprimirRelatorioPeriodo(selectedDate);
         return;
       }
       
@@ -4832,157 +4335,6 @@
       }
       
       showToast('Nenhum dado financeiro encontrado para o período selecionado.', 'error');
-    }
-
-    function imprimirRelatorioPeriodo(period) {
-      const activeDate = appState.operacao && appState.operacao.dataOperacao;
-      if (!activeDate) return;
-      
-      let targetDates = new Set();
-      let labelText = '';
-      if (period === 'semana') {
-        targetDates = getDatesInPeriod(activeDate, 'semana');
-        labelText = 'Esta Semana (Últimos 7 dias)';
-      } else if (period === 'mes') {
-        targetDates = getDatesInPeriod(activeDate, 'mes');
-        const parts = activeDate.split('-');
-        labelText = `Este Mês (${parts[1]}/${parts[0]})`;
-      }
-      
-      const comandas = (appState.historicoComandas || []).filter(c => targetDates.has(c.dataOperacao));
-      const faturamentoTotal = comandas.reduce((sum, c) => sum + (c.total || 0), 0);
-      const ticketMédio = comandas.length > 0 ? (faturamentoTotal / comandas.length) : 0;
-      
-      const productSales = {};
-      const categorySales = { 'Bebidas': 0, 'Entradas': 0, 'Pratos': 0, 'Sobremesas': 0, 'Outros': 0 };
-      let totalItensVendidos = 0;
-      
-      comandas.forEach(c => {
-        (c.itens || []).forEach(item => {
-          const menuInfo = appState.cardapio.find(m => m.nome === item.nome) || { categoria: 'Outros' };
-          const cat = menuInfo.categoria || 'Outros';
-          totalItensVendidos += (item.qtd || 0);
-          
-          if (!productSales[item.nome]) {
-            productSales[item.nome] = { nome: item.nome, qtd: 0, total: 0, category: cat };
-          }
-          productSales[item.nome].qtd += (item.qtd || 0);
-          productSales[item.nome].total += (item.qtd * item.preco);
-          
-          if (categorySales[cat] !== undefined) {
-            categorySales[cat] += (item.qtd * item.preco);
-          } else {
-            categorySales['Outros'] += (item.qtd * item.preco);
-          }
-        });
-      });
-      
-      const sortedProducts = Object.values(productSales).sort((a, b) => b.qtd - a.qtd);
-      
-      const est = appState.estabelecimento || {};
-      const logoHtml = est.logo ? '<img src="' + est.logo + '" class="logo-img" style="max-width:80px;">' : '';
-      const nomeFantasia = est.nomeFantasia || 'BarFlow OS';
-      
-      const printWindow = window.open('', '_blank', 'width=800,height=900');
-      if (!printWindow) {
-        showToast('Bloqueador de pop-ups ativo! Permita pop-ups para imprimir.', 'error');
-        return;
-      }
-      
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Relatório Periódico - ${labelText}</title>
-          <style>
-            body { font-family: system-ui, -apple-system, sans-serif; color: #000; padding: 20px; line-height: 1.4; }
-            .header { text-align: center; margin-bottom: 20px; }
-            .header h2 { margin: 5px 0; }
-            .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-            .card { border: 1px solid #ccc; padding: 12px; border-radius: 6px; text-align: center; }
-            .card span { font-size: 12px; color: #666; display: block; margin-bottom: 4px; }
-            .card h3 { margin: 0; font-size: 18px; }
-            .section { margin-bottom: 25px; }
-            .section h3 { border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-            th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
-            th { background-color: #f5f5f5; }
-            @media print {
-              body { padding: 0; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            ${logoHtml}
-            <h2>${nomeFantasia}</h2>
-            <div style="font-size:14px; font-weight:bold; margin-top:5px;">RELATÓRIO FINANCEIRO PERIÓDICO</div>
-            <div style="font-size:12px; color:#555;">Período: ${labelText}</div>
-          </div>
-          
-          <div class="kpi-grid">
-            <div class="card"><span>Faturamento Total</span><h3>${money(faturamentoTotal)}</h3></div>
-            <div class="card"><span>Ticket Médio</span><h3>${money(ticketMédio)}</h3></div>
-            <div class="card"><span>Itens Vendidos</span><h3>${totalItensVendidos} un.</h3></div>
-            <div class="card"><span>Comandas Concluídas</span><h3>${comandas.length}</h3></div>
-          </div>
-          
-          <div class="section">
-            <h3>Ranking de Produtos</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Pos.</th>
-                  <th>Produto</th>
-                  <th>Categoria</th>
-                  <th>Qtd Vendida</th>
-                  <th>Total Recebido</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${sortedProducts.map((p, idx) => `
-                  <tr>
-                    <td>${idx + 1}°</td>
-                    <td><strong>${p.nome}</strong></td>
-                    <td>${p.category}</td>
-                    <td>${p.qtd} un.</td>
-                    <td>${money(p.total)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-          
-          <div class="section">
-            <h3>Faturamento por Categoria</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Categoria</th>
-                  <th>Faturamento</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${Object.entries(categorySales).map(([cat, totalCat]) => `
-                  <tr>
-                    <td><strong>${cat}</strong></td>
-                    <td>${money(totalCat)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-          
-          <div style="font-size:10px; color:#666; margin-top:30px; text-align:center; border-top:1px solid #ccc; padding-top:10px;">
-            Impresso em ${new Date().toLocaleString('pt-BR')} • BarFlow OS
-          </div>
-          <script>
-            window.onload = function() { window.print(); }
-          </script>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
     }
 
     function imprimirRelatorio(day, isParcial, format) {
@@ -5431,65 +4783,25 @@
       if (filtered.length === 0) {
         listDiv.innerHTML = `<div class="order-item"><small>Nenhuma comanda ativa localizada com os filtros atuais.</small></div>`;
       } else {
-        listDiv.innerHTML = filtered.map(m => {
-          const itemsListHtml = (appState.pedidos[m.id] || []).map(item => {
-            const kitOrder = (appState.pedidosCozinha || []).find(p => p.mesaId === m.id && p.itens.some(ki => ki.nome === item.nome));
-            let badgeHtml = '';
-            if (kitOrder) {
-              let color = '#ccc';
-              let bg = 'rgba(255,255,255,0.08)';
-              if (kitOrder.status === 'enviado') { color = 'var(--color-warning)'; bg = 'rgba(242, 144, 56, 0.15)'; }
-              else if (kitOrder.status === 'preparando') { color = '#ff7b00'; bg = 'rgba(255, 123, 0, 0.15)'; }
-              else if (kitOrder.status === 'pronto') { color = 'var(--color-success)'; bg = 'rgba(95, 168, 56, 0.15)'; }
-              else if (kitOrder.status === 'entregue') { color = 'var(--color-text-muted)'; bg = 'rgba(255,255,255,0.05)'; }
-              badgeHtml = `<span style="background:${bg}; color:${color}; font-size:10px; font-weight:bold; padding:1px 6px; border-radius:var(--radius-full); margin-left:6px;">${kitOrder.status}</span>`;
-            }
-            return `<span style="font-size:12px; background:var(--color-surface-2); padding:3px 8px; border-radius:var(--radius-sm); border:1px solid var(--color-border); display:inline-flex; align-items:center;">${item.qtd}x ${item.nome}${badgeHtml}</span>`;
-          }).join('') || '<span class="muted" style="font-size:11px;">Sem itens no consumo.</span>';
-
-          return `
-            <div class="order-item" onclick="openMesaModal(${m.id})" style="cursor:pointer; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
-              <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                <div>
-                  <strong>${m.nome}</strong>
-                  <small>${m.pessoas || 0} cliente(s) • status ${m.status}</small>
-                </div>
-                <div style="text-align:right; display:flex; align-items:center; gap:12px;">
-                  <div>
-                    <strong>${money(m.total)}</strong>
-                    <small>${m.total > 0 ? 'Consumo ativo' : 'Sem consumo'}</small>
-                  </div>
-                  <button class="btn sm" onclick="event.stopPropagation(); openMesaModal(${m.id})">Detalhes</button>
-                </div>
-              </div>
-              <div style="width: 100%; display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid var(--color-border); padding-top: var(--space-2); margin-top: 2px;">
-                ${itemsListHtml}
-              </div>
+        listDiv.innerHTML = filtered.map(m => `
+          <div class="order-item" onclick="openMesaModal(${m.id})" style="cursor:pointer;">
+            <div>
+              <strong>${m.nome}</strong>
+              <small>${m.pessoas || 0} cliente(s) • status ${m.status}</small>
             </div>
-          `;
-        }).join('');
+            <div style="text-align:right; display:flex; align-items:center; gap:12px;">
+              <div>
+                <strong>${money(m.total)}</strong>
+                <small>${m.total > 0 ? 'Consumo ativo' : 'Sem consumo'}</small>
+              </div>
+              <button class="btn sm" onclick="event.stopPropagation(); openMesaModal(${m.id})">Detalhes</button>
+            </div>
+          </div>
+        `).join('');
       }
     }
 
     // --- View: CARDÁPIO (CRUD) ---
-    // === MELHORIA 4: Abas por categoria e pausa ===
-    var activeMenuCategoryFilter = 'Todos';
-
-    window.setActiveMenuCategoryFilter = function(cat) {
-      activeMenuCategoryFilter = cat;
-      renderMenu();
-    };
-
-    window.togglePauseMenuItem = function(globalIdx) {
-      const item = appState.cardapio[globalIdx];
-      if (item) {
-        item.indisponivel_temp = !item.indisponivel_temp;
-        saveState();
-        renderMenu();
-        showToast(`Item ${item.nome} ${item.indisponivel_temp ? 'pausado temporariamente' : 'reativado'}!`, 'success');
-      }
-    };
-
     function renderMenu() {
       const listDiv = document.getElementById('menuList');
       if (appState.cardapio.length === 0) {
@@ -5497,120 +4809,24 @@
         return;
       }
       
-      const categories = ['Todos', ...new Set(appState.cardapio.map(i => i.categoria))];
-      const tabsContainer = document.getElementById('menuCategoriesTabs');
-      if (tabsContainer) {
-        tabsContainer.innerHTML = categories.map(cat => {
-          const isActive = activeMenuCategoryFilter === cat;
-          return `<button class="btn sm ${isActive ? 'primary' : ''}" style="padding: 6px 14px; border-radius: var(--radius-full); font-size: 11px;" onclick="setActiveMenuCategoryFilter('${cat.replace(/'/g, "\\'")}')">${cat}</button>`;
-        }).join('');
-      }
-
-      const filteredItems = activeMenuCategoryFilter === 'Todos'
-        ? appState.cardapio
-        : appState.cardapio.filter(i => i.categoria === activeMenuCategoryFilter);
-
-      listDiv.innerHTML = filteredItems.map((item, idx) => {
-        const globalIdx = appState.cardapio.findIndex(x => x.nome === item.nome && x.categoria === item.categoria);
-        const fotoHtml = item.foto 
-          ? `<img src="${item.foto}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; margin-right:10px;">` 
-          : '';
-        const badgePausado = item.indisponivel_temp ? `<span class="status warning" style="padding:2px 6px; border-radius:4px; font-size:9px; font-weight:700; margin-left:6px;">PAUSADO</span>` : '';
-        
-        return `
-          <div class="menu-item" style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; align-items:center;">
-              ${fotoHtml}
-              <div>
-                <strong>${item.nome}${badgePausado}</strong>
-                <small>${item.categoria} • <span style="font-weight:700; color: ${item.disponibilidade === 'Disponível' ? 'var(--color-success)' : 'var(--color-warning)'}">${item.disponibilidade}</span></small>
-              </div>
-            </div>
-            <div style="display:flex; gap:10px; align-items:center">
-              <strong>${money(item.preco)}</strong>
-              <button class="btn sm" title="Pausar temporariamente" onclick="togglePauseMenuItem(${globalIdx})">
-                <span style="font-size:14px; color:${item.indisponivel_temp ? 'var(--color-warning)' : 'var(--color-text-muted)'};">⏱️</span>
-              </button>
-              <button class="btn sm" onclick="openMenuItemModal(${globalIdx})">Editar</button>
-              <button class="btn sm danger" onclick="deleteMenuItem(${globalIdx})">Excluir</button>
-            </div>
+      listDiv.innerHTML = appState.cardapio.map((item, idx) => `
+        <div class="menu-item">
+          <div>
+            <strong>${item.nome}</strong>
+            <small>${item.categoria} • <span style="font-weight:700; color: ${item.disponibilidade === 'Disponível' ? 'var(--color-success)' : 'var(--color-warning)'}">${item.disponibilidade}</span></small>
           </div>
-        `;
-      }).join('');
-    }
-
-    // === MELHORIA 4: Gestão de fotos e complementos ===
-    var currentEditingComplementos = [];
-
-    window.handleMenuPhotoUpload = function(input) {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const base64 = e.target.result;
-          document.getElementById('modalMenuFotoVal').value = base64;
-          const previewContainer = document.getElementById('modalMenuFotoPreviewContainer');
-          previewContainer.innerHTML = `<img src="${base64}" id="modalMenuFotoPreview" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">`;
-          
-          let btnRemove = document.getElementById('btnRemovePhoto');
-          if (!btnRemove) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.id = 'btnRemovePhoto';
-            btn.className = 'btn sm danger';
-            btn.textContent = 'Remover';
-            btn.style.padding = '4px 8px';
-            btn.onclick = removeMenuPhotoPreview;
-            previewContainer.parentNode.appendChild(btn);
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
-    window.removeMenuPhotoPreview = function() {
-      document.getElementById('modalMenuFotoVal').value = '';
-      document.getElementById('modalMenuFotoPreviewContainer').innerHTML = '<span class="muted" style="font-size:12px;">Sem foto</span>';
-      const btnRemove = document.getElementById('btnRemovePhoto');
-      if (btnRemove) btnRemove.remove();
-    };
-
-    window.renderModalComplementosList = function() {
-      const listDiv = document.getElementById('modalMenuComplementosList');
-      if (!listDiv) return;
-      if (currentEditingComplementos.length === 0) {
-        listDiv.innerHTML = '<span class="muted" style="font-size:12px;">Nenhum complemento adicionado.</span>';
-        return;
-      }
-      listDiv.innerHTML = currentEditingComplementos.map((comp, idx) => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--color-surface-2); padding:6px 12px; border-radius:var(--radius-sm); border:1px solid var(--color-border);">
-          <span style="font-size:13px;">${comp}</span>
-          <button type="button" class="btn sm danger" onclick="removeComplementoFromModal(${idx})" style="padding:2px 6px;">Excluir</button>
+          <div style="display:flex; gap:10px; align-items:center">
+            <strong>${money(item.preco)}</strong>
+            <button class="btn sm" onclick="openMenuItemModal(${idx})">Editar</button>
+            <button class="btn sm danger" onclick="deleteMenuItem(${idx})">Excluir</button>
+          </div>
         </div>
       `).join('');
-    };
-
-    window.addComplementoFromModal = function() {
-      const input = document.getElementById('modalMenuNewComplemento');
-      if (!input) return;
-      const val = input.value.trim();
-      if (val) {
-        currentEditingComplementos.push(val);
-        input.value = '';
-        renderModalComplementosList();
-      }
-    };
-
-    window.removeComplementoFromModal = function(idx) {
-      currentEditingComplementos.splice(idx, 1);
-      renderModalComplementosList();
-    };
+    }
 
     function openMenuItemModal(index = -1) {
       const isEdit = index >= 0;
-      const item = isEdit ? appState.cardapio[index] : { categoria: 'Entradas', nome: '', preco: 0, disponibilidade: 'Disponível', controlarEstoque: false, estoque: null, estoqueMinimo: null, foto: '', complementos: [] };
-      
-      currentEditingComplementos = isEdit && item.complementos ? [...item.complementos] : [];
+      const item = isEdit ? appState.cardapio[index] : { categoria: 'Entradas', nome: '', preco: 0, disponibilidade: 'Disponível', controlarEstoque: false, estoque: null, estoqueMinimo: null };
       
       const title = isEdit ? 'Editar Item do Cardápio' : 'Cadastrar Novo Item';
       const htmlBody = `
@@ -5640,20 +4856,6 @@
             <option value="Esgotado" ${item.disponibilidade === 'Esgotado' ? 'selected' : ''}>Esgotado</option>
           </select>
         </div>
-        
-        <div class="form-group" style="margin-top:10px;">
-          <label>Foto do Produto</label>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <input type="file" id="modalMenuFotoInput" accept="image/*" style="display:none;" onchange="handleMenuPhotoUpload(this)">
-            <button type="button" class="btn sm" onclick="document.getElementById('modalMenuFotoInput').click()">Selecionar Foto</button>
-            <div id="modalMenuFotoPreviewContainer">
-              ${item.foto ? `<img src="${item.foto}" id="modalMenuFotoPreview" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">` : '<span class="muted" style="font-size:12px;">Sem foto</span>'}
-            </div>
-            ${item.foto ? `<button type="button" class="btn sm danger" id="btnRemovePhoto" onclick="removeMenuPhotoPreview()" style="padding:4px 8px;">Remover</button>` : ''}
-          </div>
-          <input type="hidden" id="modalMenuFotoVal" value="${item.foto || ''}">
-        </div>
-
         <div class="form-group" style="margin-top:15px; border-top:1px solid var(--color-border); padding-top:15px;">
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
             <input type="checkbox" id="modalMenuControlarEstoque" ${item.controlarEstoque ? 'checked' : ''} onchange="document.getElementById('modalMenuEstoqueCampos').classList.toggle('hidden', !this.checked)">
@@ -5670,17 +4872,6 @@
             <input type="number" id="modalMenuEstoqueMinimo" class="form-control" min="0" step="1" value="${item.estoqueMinimo !== null && item.estoqueMinimo !== undefined ? item.estoqueMinimo : 0}">
           </div>
         </div>
-
-        <div class="form-group" style="margin-top:15px; border-top:1px solid var(--color-border); padding-top:15px;">
-          <label>Complementos (Opções para seleção do garçom)</label>
-          <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <input type="text" id="modalMenuNewComplemento" class="form-control" placeholder="Ex: Ponto: ao ponto, bem passado">
-            <button type="button" class="btn primary" onclick="addComplementoFromModal()" style="padding:0 15px;">Adicionar</button>
-          </div>
-          <div id="modalMenuComplementosList" style="display:flex; flex-direction:column; gap:6px;">
-            <!-- Renderizado dinamicamente -->
-          </div>
-        </div>
       `;
       
       const footerHtml = `
@@ -5689,7 +4880,6 @@
       `;
       
       openModal(title, htmlBody, footerHtml);
-      renderModalComplementosList();
     }
 
     function saveMenuItem(index) {
@@ -5733,12 +4923,7 @@
         }
       }
       
-      const fotoValInput = document.getElementById('modalMenuFotoVal');
-      const foto = fotoValInput ? fotoValInput.value : '';
-      const complementos = [...currentEditingComplementos];
-      const indisponivel_temp = index >= 0 ? (appState.cardapio[index].indisponivel_temp || false) : false;
-      
-      const newItem = { categoria, nome, preco, disponibilidade, controlarEstoque, estoque, estoqueMinimo, foto, indisponivel_temp, complementos };
+      const newItem = { categoria, nome, preco, disponibilidade, controlarEstoque, estoque, estoqueMinimo };
       
       if (index >= 0) {
         appState.cardapio[index] = newItem;
@@ -5771,61 +4956,6 @@
       const activeDate = appState.operacao.dataOperacao;
       const dailyTransactions = appState.caixa.filter(t => t.dataOperacao === activeDate);
       
-      // === MELHORIA 6: Comparativo Semanal ===
-      const comparisonDiv = document.getElementById('cashWeeklyComparisonContainer');
-      if (comparisonDiv) {
-        if (!activeDate) {
-          comparisonDiv.innerHTML = '<span class="muted">Caixa fechado. Abra o dia operacional para ver o comparativo.</span>';
-        } else {
-          try {
-            const parts = activeDate.split('-');
-            const todayDate = new Date(parts[0], parts[1] - 1, parts[2]);
-            const targetDate = new Date(todayDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-            const targetYear = targetDate.getFullYear();
-            const targetMonth = String(targetDate.getMonth() + 1).padStart(2, '0');
-            const targetDay = String(targetDate.getDate()).padStart(2, '0');
-            const date7DaysAgoStr = `${targetYear}-${targetMonth}-${targetDay}`;
-            
-            const day7DaysAgo = appState.historicoDias ? appState.historicoDias.find(d => d.dataOperacao === date7DaysAgoStr) : null;
-            const totalToday = dailyTransactions.filter(t => t.valor > 0).reduce((sum, item) => sum + item.valor, 0);
-            
-            if (day7DaysAgo) {
-              const faturamentoPast = day7DaysAgo.faturamentoBruto || 0;
-              if (faturamentoPast > 0) {
-                const percent = ((totalToday - faturamentoPast) / faturamentoPast) * 100;
-                const isUp = percent >= 0;
-                const color = isUp ? 'var(--color-success)' : 'var(--color-error)';
-                const arrow = isUp ? '↑' : '↓';
-                comparisonDiv.innerHTML = `
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Comparativo com semana anterior (7 dias atrás - ${targetDay}/${targetMonth}):</span>
-                    <strong style="color:${color}; font-size:1.05rem;">
-                      ${arrow} ${Math.abs(percent).toFixed(1)}%
-                    </strong>
-                  </div>
-                  <div style="margin-top:4px; font-size:var(--text-xs); color:var(--color-text-muted); display:flex; justify-content:space-between;">
-                    <span>Hoje (Faturamento Bruto): ${money(totalToday)}</span>
-                    <span>Há 7 dias (Faturamento Bruto): ${money(faturamentoPast)}</span>
-                  </div>
-                `;
-              } else {
-                comparisonDiv.innerHTML = `<span class="muted">Sem dados comparativos válidos para 7 dias atrás (${targetDay}/${targetMonth}).</span>`;
-              }
-            } else {
-              comparisonDiv.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span class="muted">Sem dados comparativos para 7 dias atrás (${targetDay}/${targetMonth}/${targetYear}).</span>
-                  <span class="muted" style="font-size:var(--text-xs); font-style:italic;">Hoje: ${money(totalToday)}</span>
-                </div>
-              `;
-            }
-          } catch(e) {
-            console.error(e);
-            comparisonDiv.innerHTML = '<span class="muted">Erro ao processar comparativo.</span>';
-          }
-        }
-      }
-
       if (dailyTransactions.length === 0) {
         listDiv.innerHTML = `<div class="cash-item"><small class="muted">Nenhum lançamento registrado no dia ativo.</small></div>`;
         renderCashCharts();
@@ -5950,114 +5080,6 @@
       ];
       
       drawDonutChart('cashDonutContainer', donutData);
-    }
-
-    // === MELHORIA 2: Gráfico de faturamento por hora ===
-    function drawHourlySalesChart(dailyTransactions) {
-      const canvas = document.getElementById('hourlySalesChart');
-      if (!canvas) return;
-      
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = (rect.width || 300) * dpr;
-      canvas.height = (rect.height || 180) * dpr;
-      
-      const ctx = canvas.getContext('2d');
-      ctx.scale(dpr, dpr);
-      
-      const width = rect.width || 300;
-      const height = rect.height || 180;
-      
-      const hourMap = {};
-      dailyTransactions.filter(t => t.valor > 0).forEach(t => {
-        const d = new Date(t.timestamp);
-        const hour = d.getHours();
-        hourMap[hour] = (hourMap[hour] || 0) + t.valor;
-      });
-      
-      const hours = Object.keys(hourMap).map(Number).sort((a, b) => a - b);
-      const minHour = hours.length > 0 ? Math.min(...hours) : 12;
-      const maxHour = hours.length > 0 ? Math.max(...hours) : 22;
-      
-      const data = [];
-      for (let h = minHour; h <= maxHour; h++) {
-        data.push({
-          label: `${h}h`,
-          value: hourMap[h] || 0
-        });
-      }
-      
-      ctx.clearRect(0, 0, width, height);
-      
-      const paddingLeft = 45;
-      const paddingRight = 15;
-      const paddingTop = 25;
-      const paddingBottom = 30;
-      
-      const chartWidth = width - paddingLeft - paddingRight;
-      const chartHeight = height - paddingTop - paddingBottom;
-      
-      const maxVal = Math.max(...data.map(d => d.value), 500);
-      
-      const gridLines = 4;
-      ctx.lineWidth = 0.8;
-      ctx.font = '9px Satoshi, system-ui, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'middle';
-      
-      for (let i = 0; i <= gridLines; i++) {
-        const val = (maxVal / gridLines) * i;
-        const y = height - paddingBottom - (chartHeight / gridLines) * i;
-        
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.beginPath();
-        ctx.setLineDash([3, 3]);
-        ctx.moveTo(paddingLeft, y);
-        ctx.lineTo(width - paddingRight, y);
-        ctx.stroke();
-        
-        ctx.fillStyle = 'var(--color-text-muted)';
-        ctx.fillText(money(val).replace(',00', ''), paddingLeft - 8, y);
-      }
-      
-      const barGap = 15;
-      const barWidth = (chartWidth - barGap * (data.length - 1)) / data.length;
-      
-      ctx.setLineDash([]);
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      
-      data.forEach((d, index) => {
-        const barHeight = (d.value / maxVal) * chartHeight;
-        const x = paddingLeft + index * (barWidth + barGap);
-        const y = height - paddingBottom - barHeight;
-        
-        ctx.fillStyle = 'var(--color-primary)';
-        ctx.globalAlpha = 0.85;
-        
-        const radius = Math.min(4, barHeight);
-        ctx.beginPath();
-        ctx.moveTo(x, height - paddingBottom);
-        ctx.lineTo(x, y + radius);
-        ctx.arcTo(x, y, x + radius, y, radius);
-        ctx.lineTo(x + barWidth - radius, y);
-        ctx.arcTo(x + barWidth, y, x + barWidth, y + radius, radius);
-        ctx.lineTo(x + barWidth, height - paddingBottom);
-        ctx.closePath();
-        ctx.fill();
-        
-        ctx.globalAlpha = 1.0;
-        
-        if (d.value > 0) {
-          ctx.fillStyle = 'var(--color-text)';
-          ctx.font = 'bold 9px Satoshi, system-ui, sans-serif';
-          ctx.fillText(money(d.value).replace(',00', ''), x + barWidth / 2, y - 4);
-        }
-        
-        ctx.fillStyle = 'var(--color-text-muted)';
-        ctx.font = '10px Satoshi, system-ui, sans-serif';
-        ctx.fillText(d.label, x + barWidth / 2, height - paddingBottom + 16);
-      });
     }
 
     function drawBarChart(containerId, data) {
@@ -6361,67 +5383,20 @@
         showToast('Abra a mesa antes de lançar itens!', 'warning');
         return;
       }
-
-      const catalogItem = appState.cardapio.find(c => c.nome === itemName);
-      if (catalogItem && catalogItem.complementos && catalogItem.complementos.length > 0) {
-        openGarcomComplementoModal(id, catalogItem, price);
-        return;
-      }
-
-      proceedAddGarcomItemToDraft(id, itemName, price, '');
-    }
-
-    function proceedAddGarcomItemToDraft(id, itemName, price, obs = '') {
       if (!garcomDraft[id]) garcomDraft[id] = [];
 
-      const exist = garcomDraft[id].find(i => i.nome === itemName && i.obs === obs);
+      // Agrupa itens sem observação, itens com obs sempre separados
+      const exist = garcomDraft[id].find(i => i.nome === itemName && !i.obs);
       if (exist) {
         exist.qtd += 1;
       } else {
-        garcomDraft[id].push({ nome: itemName, qtd: 1, preco: price, obs: obs });
+        garcomDraft[id].push({ nome: itemName, qtd: 1, preco: price, obs: '' });
       }
 
       renderGarcomDraft(id);
-      const searchInput = document.getElementById('garcomSearchCardapio');
-      if (searchInput) searchInput.value = '';
-      const results = document.getElementById('garcomAutocompleteResults');
-      if (results) results.classList.add('hidden');
+      document.getElementById('garcomSearchCardapio').value = '';
+      document.getElementById('garcomAutocompleteResults').classList.add('hidden');
     }
-
-    function openGarcomComplementoModal(mesaId, catalogItem, price) {
-      const title = `Complementos - ${catalogItem.nome}`;
-      let bodyHtml = `
-        <p class="muted" style="margin-bottom:12px; font-size:var(--text-sm);">Selecione ou digite um complemento para este item:</p>
-        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;">
-          ${catalogItem.complementos.map((comp, idx) => `
-            <button class="btn" style="text-align:left; background:var(--color-surface-2); padding:10px 14px; border:1px solid var(--color-border); border-radius:var(--radius-md);" onclick="selectGarcomComplemento('${mesaId}', '${catalogItem.nome.replace(/'/g, "\\'")}', ${price}, '${comp.replace(/'/g, "\\'")}')">
-              ${comp}
-            </button>
-          `).join('')}
-        </div>
-        <div class="form-group">
-          <label>Outro / Personalizado</label>
-          <input type="text" id="modalGarcomComplementoCustom" class="form-control" placeholder="Escreva a observação...">
-        </div>
-      `;
-      let footerHtml = `
-        <button class="btn" onclick="closeModal()">Cancelar</button>
-        <button class="btn primary" onclick="confirmCustomGarcomComplemento('${mesaId}', '${catalogItem.nome.replace(/'/g, "\\'")}', ${price})">Confirmar</button>
-      `;
-      openModal(title, bodyHtml, footerHtml);
-    }
-
-    window.selectGarcomComplemento = function(mesaId, itemName, price, comp) {
-      proceedAddGarcomItemToDraft(parseInt(mesaId), itemName, price, comp);
-      closeModal();
-    };
-
-    window.confirmCustomGarcomComplemento = function(mesaId, itemName, price) {
-      const input = document.getElementById('modalGarcomComplementoCustom');
-      const obs = input ? input.value.trim() : '';
-      proceedAddGarcomItemToDraft(parseInt(mesaId), itemName, price, obs);
-      closeModal();
-    };
 
     function isItemBebida(catalogItem) {
       if (!catalogItem) return false;
@@ -7203,7 +6178,7 @@
       if (!tbody) return;
       
       if (!appState.usuarios || appState.usuarios.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; text-align: center; color: var(--color-text-muted);">Nenhum funcionário cadastrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: var(--color-text-muted);">Nenhum funcionário cadastrado.</td></tr>`;
       } else {
         tbody.innerHTML = appState.usuarios.map(u => {
           const roleLabel = u.role === 'gerente' ? '💼 Gerente Administrador' : '📱 Garçom';
@@ -7212,18 +6187,13 @@
           const deleteBtn = isMainAdmin 
             ? `<span style="font-size: 11px; color: var(--color-text-muted);">Principal</span>`
             : `<button class="btn sm danger" style="padding: 4px 8px; margin-left: 4px;" onclick="excluirUsuario(${u.id})">Excluir</button>`;
-             
+            
           const editBtn = `<button class="btn sm" style="padding: 4px 8px;" onclick="alterarSenhaUsuario(${u.id})">Alterar Senha</button>`;
-          
-          const metaInput = u.role === 'garcom'
-            ? `<input type="number" class="form-control" style="width: 80px; text-align: center; padding: 2px 4px;" value="${u.meta || 0}" min="0" onchange="updateGarcomMeta(${u.id}, this.value)">`
-            : `<span class="muted">-</span>`;
           
           return `
             <tr style="border-bottom: 1px solid var(--color-border);">
               <td style="padding: 12px 8px; font-weight: 500;">${u.nome}</td>
               <td style="padding: 12px 8px;">${roleLabel}</td>
-              <td style="padding: 12px 8px; text-align: center;">${metaInput}</td>
               <td style="padding: 12px 8px;"><code>${u.senha}</code></td>
               <td style="padding: 12px 8px; text-align: right;">
                 <div style="display: inline-flex; gap: 4px; align-items: center;">
@@ -7246,42 +6216,12 @@
       if (garcons.length === 0) {
         perfList.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--color-text-muted);">Nenhum garçom cadastrado para exibir desempenho.</div>`;
       } else {
-        const last7DaysDates = new Set();
-        if (activeDate) {
-          const parts = activeDate.split('-');
-          const todayDate = new Date(parts[0], parts[1] - 1, parts[2]);
-          for (let i = 0; i < 7; i++) {
-            const d = new Date(todayDate.getTime() - i * 24 * 60 * 60 * 1000);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            last7DaysDates.add(`${year}-${month}-${day}`);
-          }
-        }
-
         perfList.innerHTML = garcons.map(g => {
           const minhasComandas = comandasHoje.filter(c => c.garcom === g.nome);
           const totalVendas = minhasComandas.reduce((sum, c) => sum + (c.subtotal || 0), 0);
           const totalComissao = minhasComandas.reduce((sum, c) => sum + ((c.total || 0) - (c.subtotal || 0)), 0);
           const totalMesas = minhasComandas.length;
           
-          const targetMeta = g.meta || 0;
-          const percentMeta = targetMeta > 0 ? Math.min(100, (totalVendas / targetMeta) * 100) : 0;
-          const progressBarHtml = targetMeta > 0 ? `
-            <div style="margin-top: 8px;">
-              <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--color-text-muted); margin-bottom:2px;">
-                <span>Meta: ${money(targetMeta)}</span>
-                <span>${percentMeta.toFixed(0)}% atingido</span>
-              </div>
-              <div style="background: var(--color-surface-offset); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid var(--color-border);">
-                <div style="background: var(--color-success); width: ${percentMeta}%; height: 100%; border-radius: 3px;"></div>
-              </div>
-            </div>
-          ` : '';
-
-          const minhasComandasSemana = (appState.historicoComandas || []).filter(c => c.garcom === g.nome && last7DaysDates.has(c.dataOperacao));
-          const acumuladoSemana = minhasComandasSemana.reduce((sum, c) => sum + (c.subtotal || 0), 0);
-
           return `
             <div style="padding: 12px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: var(--space-1);">
               <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -7292,29 +6232,11 @@
                 <span>Vendas: <strong>${money(totalVendas)}</strong></span>
                 <span>Comissão (10%): <strong style="color: var(--color-success);">${money(totalComissao)}</strong></span>
               </div>
-              ${progressBarHtml}
-              <div style="font-size: var(--text-xs); color: var(--color-text-muted); border-top: 1px solid var(--color-border); padding-top: 6px; margin-top: 6px; display: flex; justify-content: space-between;">
-                <span>Acumulado 7 dias:</span>
-                <strong style="color: var(--color-text);">${money(acumuladoSemana)}</strong>
-              </div>
             </div>
           `;
         }).join('');
       }
     }
-
-    window.updateGarcomMeta = function(id, val) {
-      const u = appState.usuarios.find(user => user.id === id);
-      if (u) {
-        let numericVal = parseFloat(val);
-        if (isNaN(numericVal)) numericVal = 0;
-        if (numericVal < 0) numericVal = 0;
-        
-        u.meta = numericVal;
-        saveState();
-        renderEquipePanel();
-      }
-    };
 
     // --- Painel do Garçom: Navegação, Mesas e Pedidos ---
     var garcomTablesFilter = 'all'; // 'all' ou 'my'
@@ -7719,75 +6641,6 @@
       }
     }
 
-    // === MELHORIA 9: Nuvem - Backup Google Drive ===
-    window.updateGoogleClientId = function(val) {
-      if (!appState.configuracoes) appState.configuracoes = {};
-      appState.configuracoes.googleClientId = val.trim();
-      saveState();
-      showToast('Google Client ID salvo com sucesso!', 'success');
-    };
-
-    window.startGoogleDriveAuth = function() {
-      const clientId = (appState.configuracoes && appState.configuracoes.googleClientId) || '';
-      if (!clientId) {
-        showToast('Por favor, configure o Google Client ID primeiro.', 'warning');
-        return;
-      }
-      const redirectUri = window.location.origin + window.location.pathname;
-      const scope = 'https://www.googleapis.com/auth/drive.file';
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}`;
-      window.location.href = authUrl;
-    };
-
-    function checkGoogleDriveRedirect() {
-      const hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        const params = new URLSearchParams(hash.substring(1));
-        const token = params.get('access_token');
-        if (token) {
-          localStorage.setItem('gdrive_access_token', token);
-          window.location.hash = '';
-          showToast('Conectado ao Google Drive com sucesso!', 'success');
-        }
-      }
-    }
-
-    // === MELHORIA 10: Notificação de Inatividade de Mesa ===
-    var lastAlertedTables = {};
-    function startTableInactivityCheck() {
-      setInterval(() => {
-        if (!currentUser || currentUser.role !== 'gerente') return;
-        if (!appState || !appState.mesas) return;
-        
-        const now = Date.now();
-        const inactiveLimit = 60 * 60 * 1000; // 60 minutos
-        const alertRepeatLimit = 30 * 60 * 1000; // 30 minutos
-        
-        appState.mesas.forEach(mesa => {
-          if (mesa.status !== 'ocupada' || !mesa.horaAbertura) return;
-          
-          const timeOpen = now - mesa.horaAbertura;
-          if (timeOpen < inactiveLimit) return;
-          
-          const orders = (appState.pedidosCozinha || []).filter(p => 
-            p.mesaId === mesa.id && (now - p.timestamp) < inactiveLimit
-          );
-          if (orders.length > 0) return;
-          
-          const pendingOrders = (appState.pedidosCozinha || []).filter(p => 
-            p.mesaId === mesa.id && (p.status === 'pendente' || p.status === 'preparando')
-          );
-          if (pendingOrders.length > 0) return;
-          
-          const lastAlerted = lastAlertedTables[mesa.id] || 0;
-          if ((now - lastAlerted) < alertRepeatLimit) return;
-          
-          lastAlertedTables[mesa.id] = now;
-          showToast(`⚠️ Mesa "${mesa.nome}" está sem atividade há mais de 1 hora!`, 'warning');
-        });
-      }, 5 * 60 * 1000);
-    }
-
     // Inicializar App
     async function resumeBoot() {
       if (isHttp) await loadStateFromServer();
@@ -7801,17 +6654,6 @@
       } catch (err) {
         console.error('Erro ao iniciar bancos de dados offline:', err);
       }
-      
-      // === MELHORIA 9: Inicializar Google Drive e OAuth ===
-      checkGoogleDriveRedirect();
-      const gInput = document.getElementById('cfgGoogleClientId');
-      if (gInput && appState.configuracoes) {
-        gInput.value = appState.configuracoes.googleClientId || '';
-      }
-
-      // === MELHORIA 10: Iniciar Monitoramento de Inatividade ===
-      startTableInactivityCheck();
-
       renderActiveView();
       startBackupTimer();
       hasMovementSinceLastBackup = false;
