@@ -5343,6 +5343,21 @@
       document.getElementById('garcomAutocompleteResults').classList.add('hidden');
     }
 
+    function isItemBebida(catalogItem) {
+      if (!catalogItem) return false;
+      const cat = (catalogItem.categoria || '').toLowerCase().trim();
+      const termosBebida = [
+        'bebidas', 'bebida', 'cervejas', 'cerveja', 'sucos', 'suco', 
+        'refrigerantes', 'refrigerante', 'drinks', 'drink', 'doses', 
+        'dose', 'vinhos', 'vinho', 'águas', 'água', 'aguas', 'agua', 
+        'coquetéis', 'coquetel', 'chopes', 'chopp', 'destilados', 'destilado',
+        'licores', 'licor', 'cafés', 'café', 'chás', 'chá', 'shake'
+      ];
+      return termosBebida.some(function(termo) {
+        return cat === termo || cat.includes(termo);
+      });
+    }
+
     function renderGarcomDraft(mesaId) {
       const container = document.getElementById('garcomDraftList');
       const section = document.getElementById('garcomDraftSection');
@@ -5377,7 +5392,7 @@
       // Verifica se o rascunho possui itens de comida/petisco (preparado)
       const temComida = draft.some(function(item) {
         const catalogItem = appState.cardapio.find(function(c) { return c.nome === item.nome; });
-        return !catalogItem || catalogItem.categoria !== 'Bebidas';
+        return !catalogItem || !isItemBebida(catalogItem);
       });
 
       const btnKitchen = document.getElementById('btnEnviarCozinha');
@@ -5455,7 +5470,7 @@
       // 1. Cria registro na fila da cozinha (apenas para itens que não sejam da categoria "Bebidas")
       const itensPreparados = draft.filter(function(draftItem) {
         const catalogItem = appState.cardapio.find(function(c) { return c.nome === draftItem.nome; });
-        return !catalogItem || catalogItem.categoria !== 'Bebidas';
+        return !catalogItem || !isItemBebida(catalogItem);
       });
 
       if (itensPreparados.length > 0) {
@@ -5493,7 +5508,11 @@
 
       saveState();
       renderGarcomMesaDetails(id);
-      showToast('🚀 Pedido enviado para a Cozinha! ' + pedidoCozinha.itens.length + ' item(s).', 'success');
+      if (itensPreparados.length > 0) {
+        showToast('🚀 Pedido enviado para a Cozinha! ' + itensPreparados.length + ' item(s).', 'success');
+      } else {
+        showToast('✅ Bebidas confirmadas e lançadas com sucesso!', 'success');
+      }
     }
 
     // --- Painel da Cozinha ---
@@ -6451,7 +6470,7 @@
           const labelStock = item.controlarEstoque ? ` • Qtd: ${item.estoque || 0}` : '';
           
           return `
-            <div class="autocomplete-item" onclick="addGarcomItemToDraft('${item.nome.replace(/'/g, "\'")}', ${item.preco})">
+            <div class="autocomplete-item" onclick="addGarcomItemToDraft('${item.nome.replace(/'/g, "\\'")}', ${item.preco})">
               <div>
                 <strong>${item.nome}${warningBadge}</strong>
                 <small class="muted" style="display:block;">${item.categoria}${labelStock}</small>
@@ -6494,7 +6513,7 @@
         const labelStock = item.controlarEstoque ? ` • Qtd: ${item.estoque || 0}` : '';
         
         return `
-          <div class="menu-item" style="padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="addGarcomItemToDraft('${item.nome.replace(/'/g, "\'")}', ${item.preco})">
+          <div class="menu-item" style="padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="addGarcomItemToDraft('${item.nome.replace(/'/g, "\\'")}', ${item.preco})">
             <div>
               <strong style="font-size: var(--text-sm);">${item.nome}${warningBadge}</strong>
               <small style="color: var(--color-text-muted);">${item.categoria}${labelStock}</small>
