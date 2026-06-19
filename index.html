@@ -6973,8 +6973,6 @@
       const passwordInput = document.getElementById('loginPasswordInput');
       const password = passwordInput ? passwordInput.value : '';
 
-      let serverAttemptedAndFailed = false;
-
       if (isHttp) {
         // Autenticação via servidor (com hash de senha)
         try {
@@ -6985,52 +6983,43 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success) {
-              setSessionToken(data.token);
-              currentUser = { role: data.role, name: data.nome };
-              localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
-              applyUserRole();
-              const saudacao = data.role === 'gerente' ? 'Painel do Caixa/Gerente ativo.' : 'Painel do Garçom ativo.';
-              showToast('Bem-vindo, ' + data.nome + '! ' + saudacao, 'success');
-              return;
-            } else {
-              showToast(data.error || 'Credenciais inválidas!', 'error');
-              return;
-            }
+          const data = await res.json();
+          if (data.success) {
+            setSessionToken(data.token);
+            currentUser = { role: data.role, name: data.nome };
+            localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
+            applyUserRole();
+            const saudacao = data.role === 'gerente' ? 'Painel do Caixa/Gerente ativo.' : 'Painel do Garçom ativo.';
+            showToast('Bem-vindo, ' + data.nome + '! ' + saudacao, 'success');
           } else {
-            // Se o servidor respondeu com erro (ex: 404 no GitHub Pages), ativa o fallback offline
-            serverAttemptedAndFailed = true;
+            showToast(data.error || 'Credenciais inválidas!', 'error');
           }
         } catch (err) {
-          console.warn('[Sincronização] Servidor indisponível, tentando autenticação local offline...', err);
-          serverAttemptedAndFailed = true;
+          showToast('Erro de conexão com o servidor.', 'error');
         }
+        return;
       }
 
-      // Fallback offline (sem servidor HTTP ou quando o servidor remoto falhar/der erro)
-      if (!isHttp || serverAttemptedAndFailed) {
-        if (loginRole === 'gerente') {
-          const user = (appState.usuarios || []).find(u => u.role === 'gerente' && u.senha === password);
-          if (user) {
-            currentUser = { role: 'gerente', name: user.nome };
-            localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
-            applyUserRole();
-            showToast('Olá, ' + user.nome + '! Painel do Caixa/Gerente ativo (Modo Offline).', 'success');
-          } else {
-            showToast('Senha de Gerente incorreta!', 'error');
-          }
-        } else if (loginRole === 'garcom') {
-          const user = (appState.usuarios || []).find(u => u.role === 'garcom' && u.nome.toLowerCase() === loginGarcomName.toLowerCase());
-          if (user && user.senha === password) {
-            currentUser = { role: 'garcom', name: user.nome };
-            localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
-            applyUserRole();
-            showToast('Bem-vindo, ' + user.nome + '! Painel do Garçom ativo (Modo Offline).', 'success');
-          } else {
-            showToast('Senha de Garçom incorreta!', 'error');
-          }
+      // Fallback offline (sem servidor HTTP)
+      if (loginRole === 'gerente') {
+        const user = (appState.usuarios || []).find(u => u.role === 'gerente' && u.senha === password);
+        if (user) {
+          currentUser = { role: 'gerente', name: user.nome };
+          localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
+          applyUserRole();
+          showToast('Olá, ' + user.nome + '! Painel do Caixa/Gerente ativo.', 'success');
+        } else {
+          showToast('Senha de Gerente incorreta!', 'error');
+        }
+      } else if (loginRole === 'garcom') {
+        const user = (appState.usuarios || []).find(u => u.role === 'garcom' && u.nome.toLowerCase() === loginGarcomName.toLowerCase());
+        if (user && user.senha === password) {
+          currentUser = { role: 'garcom', name: user.nome };
+          localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
+          applyUserRole();
+          showToast('Bem-vindo, ' + user.nome + '! Painel do Garçom ativo.', 'success');
+        } else {
+          showToast('Senha de Garçom incorreta!', 'error');
         }
       }
     }
