@@ -1305,10 +1305,10 @@
 
       <!-- KPIs Dashboard -->
       <section class="kpis">
-        <article class="card kpi"><span class="muted">Mesas ocupadas</span><strong id="kpiMesas">0</strong></article>
-        <article class="card kpi"><span class="muted">Comandas abertas</span><strong id="kpiComandas">0</strong></article>
-        <article class="card kpi"><span class="muted">Faturamento do dia</span><strong id="kpiFaturamento">R$ 0,00</strong></article>
-        <article class="card kpi"><span class="muted">Ticket médio</span><strong id="kpiTicket">R$ 0,00</strong></article>
+        <article class="card kpi"><span class="muted">Mesas ocupadas</span><strong id="kpiMesas">0 / 100</strong></article>
+        <article class="card kpi"><span class="muted">Consumo em aberto</span><strong id="kpiConsumoAberto">R$ 0,00</strong></article>
+        <article class="card kpi"><span class="muted">Faturamento concluído</span><strong id="kpiFaturamento">R$ 0,00</strong></article>
+        <article class="card kpi"><span class="muted">Estoque crítico</span><strong id="kpiEstoqueCritico">0 item(ns)</strong></article>
       </section>
 
       <!-- View: Painel do Garçom (Mobile View) -->
@@ -1609,6 +1609,28 @@
               </div>
             </article>
           </div>
+
+          <!-- Comissão dos Garçons -->
+          <article class="card panel" style="margin-top: var(--space-5);">
+            <div class="section-title" style="margin-bottom: var(--space-4)">
+              <h3>👥 Comissão dos Garçons (10%)</h3>
+            </div>
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: var(--text-sm);">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--color-border); color: var(--color-text-muted);">
+                    <th style="padding: 12px 8px;">Garçom</th>
+                    <th style="padding: 12px 8px;">Comandas Atendidas</th>
+                    <th style="padding: 12px 8px;">Faturamento em Consumo (Subtotal)</th>
+                    <th style="padding: 12px 8px; text-align: right;">Comissão Gerada</th>
+                  </tr>
+                </thead>
+                <tbody id="reportGarcomComissaoList">
+                  <tr><td colspan="4" style="padding: 12px 8px; text-align: center;"><small class="muted">Sem comissões geradas para o dia selecionado.</small></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
         </div>
 
         <!-- Subview: Estoque -->
@@ -3343,6 +3365,39 @@
           `;
         }).join('');
       }
+
+      const gList = document.getElementById('reportGarcomComissaoList');
+      if (gList) {
+        const garcomData = {};
+        comandasHoje.forEach(c => {
+          const name = c.garcom || 'Caixa/Balcão';
+          if (!garcomData[name]) {
+            garcomData[name] = {
+              name: name,
+              count: 0,
+              subtotal: 0,
+              comissao: 0
+            };
+          }
+          garcomData[name].count += 1;
+          garcomData[name].subtotal += (c.subtotal || 0);
+          garcomData[name].comissao += (c.servico || 0);
+        });
+
+        const garcomRows = Object.values(garcomData);
+        if (garcomRows.length === 0) {
+          gList.innerHTML = `<tr><td colspan="4" style="padding: 12px 8px; text-align: center;"><small class="muted">Sem comissões geradas para o dia selecionado.</small></td></tr>`;
+        } else {
+          gList.innerHTML = garcomRows.map(g => `
+            <tr style="border-bottom: 1px solid var(--color-border);">
+              <td style="padding: 12px 8px;"><strong>${g.name}</strong></td>
+              <td style="padding: 12px 8px;">${g.count} mesa(s)</td>
+              <td style="padding: 12px 8px;">${money(g.subtotal)}</td>
+              <td style="padding: 12px 8px; text-align: right; font-weight: bold; color: var(--color-success);">${money(g.comissao)}</td>
+            </tr>
+          `).join('');
+        }
+      }
     }
 
     // Exporta escopo global para o HTML modal
@@ -3361,12 +3416,14 @@
 // --- Logica de Negocio: MESAS E PEDIDOS ---
     
     function updateKPIs() {
-      const mesasOcupadas = appState.mesas.filter(m => m.status === 'ocupada').length;
+      const totalMesas = appState.mesas ? appState.mesas.length : 100;
+      const mesasOcupadas = appState.mesas ? appState.mesas.filter(m => m.status === 'ocupada').length : 0;
       const kpiMesas = document.getElementById('kpiMesas');
-      if (kpiMesas) kpiMesas.textContent = mesasOcupadas;
+      if (kpiMesas) kpiMesas.textContent = `${mesasOcupadas} / ${totalMesas}`;
       
-      const kpiComandas = document.getElementById('kpiComandas');
-      if (kpiComandas) kpiComandas.textContent = mesasOcupadas;
+      const totalConsumoAberto = appState.mesas ? appState.mesas.reduce((sum, m) => sum + (m.total || 0), 0) : 0;
+      const kpiConsumoAberto = document.getElementById('kpiConsumoAberto');
+      if (kpiConsumoAberto) kpiConsumoAberto.textContent = money(totalConsumoAberto);
       
       // Filtra transações do dia operacional ativo para os KPIs dinâmicos do dia
       const activeDate = appState.operacao ? appState.operacao.dataOperacao : null;
@@ -3379,15 +3436,12 @@
       const kpiFaturamento = document.getElementById('kpiFaturamento');
       if (kpiFaturamento) kpiFaturamento.textContent = money(totalCaixaPositivo);
       
-      // Histórico de comandas fechadas hoje
-      const comandasHoje = (appState.historicoComandas || []).filter(c => {
-        const rawDate = c.dataOperacao || (appState.operacao && appState.operacao.dataOperacao);
-        return rawDate === activeDate;
-      }).length || 1;
-      
-      const ticketMedio = totalCaixaPositivo / comandasHoje;
-      const kpiTicket = document.getElementById('kpiTicket');
-      if (kpiTicket) kpiTicket.textContent = money(ticketMedio);
+      const estoqueCriticoCount = appState.cardapio ? appState.cardapio.filter(i => i.controlarEstoque && (i.estoque || 0) <= (i.estoqueMinimo || 0)).length : 0;
+      const kpiEstoqueCritico = document.getElementById('kpiEstoqueCritico');
+      if (kpiEstoqueCritico) {
+        kpiEstoqueCritico.textContent = `${estoqueCriticoCount} item(ns)`;
+        kpiEstoqueCritico.style.color = estoqueCriticoCount > 0 ? 'var(--color-warning)' : 'var(--color-text)';
+      }
 
       // Se o usuário atual for garçom, atualiza KPIs privados do garçom
       if (currentUser && currentUser.role === 'garcom') {
