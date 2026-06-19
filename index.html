@@ -4253,13 +4253,13 @@
           const diffColor = day.diferencaCaixa === 0 ? '#000' : (day.diferencaCaixa < 0 ? 'red' : 'orange');
           const diffSign = day.diferencaCaixa > 0 ? '+' : '';
           finalSectionHtml = `
-            <div style="display:flex; justify-content:space-between; width:100%;"><span>Dinheiro Esperado:</span><strong>\${money(day.saldoFinalEsperado)}</strong></div>
-            <div style="display:flex; justify-content:space-between; width:100%;"><span>Dinheiro Declarado:</span><strong>\${money(day.saldoFinalDeclarado)}</strong></div>
-            <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold; color:\${diffColor};"><span>Diferença / Quebra:</span><span>\${diffSign}\${money(day.diferencaCaixa)}</span></div>
+            <div style="display:flex; justify-content:space-between; width:100%;"><span>Dinheiro Esperado:</span><strong>${money(day.saldoFinalEsperado)}</strong></div>
+            <div style="display:flex; justify-content:space-between; width:100%;"><span>Dinheiro Declarado:</span><strong>${money(day.saldoFinalDeclarado)}</strong></div>
+            <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold; color:${diffColor};"><span>Diferença / Quebra:</span><span>${diffSign}${money(day.diferencaCaixa)}</span></div>
           `;
         } else {
           finalSectionHtml = `
-            <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold;"><span>Saldo em Caixa Est.:</span><strong>\${money(day.saldoFinalEsperado)}</strong></div>
+            <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold;"><span>Saldo em Caixa Est.:</span><strong>${money(day.saldoFinalEsperado)}</strong></div>
             <div style="font-size:10px; font-style:italic; margin-top:2px;">(Estimado: Troco + Vendas Dinheiro + Suprimento - Sangria)</div>
           `;
         }
@@ -4317,51 +4317,51 @@
           </head>
           <body>
             <div class="header">
-              \${logoHtml}
-              <h3>\${nomeFantasia}</h3>
-              \${razaoSocial}
-              \${cnpj}
-              \${telefone}
-              \${endereco}
+              ${logoHtml}
+              <h3>${nomeFantasia}</h3>
+              ${razaoSocial}
+              ${cnpj}
+              ${telefone}
+              ${endereco}
             </div>
             <hr>
             <div style="font-size:11px; margin-bottom: 8px; text-align:left;">
               <div style="text-align:center; font-weight:bold;">RELATÓRIO FINANCEIRO DE CAIXA</div>
-              <div style="text-align:center; font-weight:bold; font-size:10px;">(\${isParcial ? 'LEITURA PARCIAL / X' : 'FECHAMENTO CONSOLIDADO / Z'})</div>
+              <div style="text-align:center; font-weight:bold; font-size:10px;">(${isParcial ? 'LEITURA PARCIAL / X' : 'FECHAMENTO CONSOLIDADO / Z'})</div>
               <hr>
-              <div>Dia Operacional: <strong>\${dataStr}</strong></div>
-              <div>Abertura: <strong>\${day.horaAbertura || '--:--'}</strong></div>
-              <div>Fechamento: <strong>\${day.horaFechamento || '--:--'}</strong></div>
-              <div>Impresso em: \${dataPrint} às \${horaPrint}</div>
+              <div>Dia Operacional: <strong>${dataStr}</strong></div>
+              <div>Abertura: <strong>${day.horaAbertura || '--:--'}</strong></div>
+              <div>Fechamento: <strong>${day.horaFechamento || '--:--'}</strong></div>
+              <div>Impresso em: ${dataPrint} às ${horaPrint}</div>
             </div>
             <hr>
             
-            <div style="display:flex; justify-content:space-between;"><span>Fundo Troco Inicial:</span><strong>\${money(day.saldoInicial)}</strong></div>
+            <div style="display:flex; justify-content:space-between;"><span>Fundo Troco Inicial:</span><strong>${money(day.saldoInicial)}</strong></div>
             
             <div class="section-title">&mdash;&mdash; FATURAMENTO VENDAS &mdash;&mdash;</div>
-            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em Pix:</span><strong>\${money(day.vendas.Pix)}</strong></div>
-            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em C. Crédito:</span><strong>\${money(day.vendas.Credito)}</strong></div>
-            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em C. Débito:</span><strong>\${money(day.vendas.Debito)}</strong></div>
-            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em Dinheiro:</span><strong>\${money(day.vendas.Dinheiro)}</strong></div>
+            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em Pix:</span><strong>${money(day.vendas.Pix)}</strong></div>
+            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em C. Crédito:</span><strong>${money(day.vendas.Credito)}</strong></div>
+            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em C. Débito:</span><strong>${money(day.vendas.Debito)}</strong></div>
+            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Vendas em Dinheiro:</span><strong>${money(day.vendas.Dinheiro)}</strong></div>
             <hr style="margin: 4px 0;">
-            <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>Faturamento Bruto:</span><strong>\${money(day.faturamentoBruto)}</strong></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>Faturamento Bruto:</span><strong>${money(day.faturamentoBruto)}</strong></div>
             
             <div class="section-title">&mdash;&mdash; MOVIMENTAÇÃO CAIXA &mdash;&mdash;</div>
-            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Suprimentos:</span><strong>\${money(day.suprimentos)}</strong></div>
-            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Sangrias (Despesas):</span><strong>\${money(day.sangrias)}</strong></div>
+            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Suprimentos:</span><strong>${money(day.suprimentos)}</strong></div>
+            <div style="display:flex; justify-content:space-between; padding-left:5px;"><span>Sangrias (Despesas):</span><strong>${money(day.sangrias)}</strong></div>
             <hr style="margin: 4px 0;">
-            <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>Faturamento Líquido:</span><strong>\${money(day.faturamentoLiquido)}</strong></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>Faturamento Líquido:</span><strong>${money(day.faturamentoLiquido)}</strong></div>
             
             <div class="section-title">&mdash;&mdash; FECHAMENTO DE DINHEIRO &mdash;&mdash;</div>
-            \${finalSectionHtml}
+            ${finalSectionHtml}
             
-            \${day.obs ? \`
+            ${day.obs ? `
             <hr>
             <div style="font-size:10px;">
               <strong>Observações:</strong><br>
-              \${day.obs}
+              ${day.obs}
             </div>
-            \` : ''}
+            ` : ''}
             
             <hr>
             <div style="text-align:center; font-size:10px; margin-top:8px;">
@@ -4375,29 +4375,29 @@
         if (!isParcial) {
           const diffColor = day.diferencaCaixa === 0 ? 'green' : (day.diferencaCaixa < 0 ? 'red' : 'orange');
           const diffSign = day.diferencaCaixa > 0 ? '+' : '';
-          finalSectionHtml = \`
-            <tr><td><strong>Fundo de Troco Inicial</strong></td><td class="text-right">\${money(day.saldoInicial)}</td></tr>
-            <tr><td><strong>Faturamento Líquido de Vendas</strong></td><td class="text-right">\${money(day.faturamentoLiquido)}</td></tr>
-            <tr><td><strong>Dinheiro em Caixa Esperado</strong></td><td class="text-right">\${money(day.saldoFinalEsperado)}</td></tr>
-            <tr><td><strong>Dinheiro em Caixa Declarado</strong></td><td class="text-right">\${money(day.saldoFinalDeclarado)}</td></tr>
+          finalSectionHtml = `
+            <tr><td><strong>Fundo de Troco Inicial</strong></td><td class="text-right">${money(day.saldoInicial)}</td></tr>
+            <tr><td><strong>Faturamento Líquido de Vendas</strong></td><td class="text-right">${money(day.faturamentoLiquido)}</td></tr>
+            <tr><td><strong>Dinheiro em Caixa Esperado</strong></td><td class="text-right">${money(day.saldoFinalEsperado)}</td></tr>
+            <tr><td><strong>Dinheiro em Caixa Declarado</strong></td><td class="text-right">${money(day.saldoFinalDeclarado)}</td></tr>
             <tr style="font-size: 16px; background-color: #f8f9fa;">
               <td><strong>Diferença / Quebra</strong></td>
-              <td class="text-right" style="color: \${diffColor}; font-weight: bold;">\${diffSign}\${money(day.diferencaCaixa)}</td>
+              <td class="text-right" style="color: ${diffColor}; font-weight: bold;">${diffSign}${money(day.diferencaCaixa)}</td>
             </tr>
-          \`;
+          `;
         } else {
-          finalSectionHtml = \`
-            <tr><td><strong>Fundo de Troco Inicial</strong></td><td class="text-right">\${money(day.saldoInicial)}</td></tr>
-            <tr><td><strong>Faturamento Líquido de Vendas (Até o momento)</strong></td><td class="text-right">\${money(day.faturamentoLiquido)}</td></tr>
+          finalSectionHtml = `
+            <tr><td><strong>Fundo de Troco Inicial</strong></td><td class="text-right">${money(day.saldoInicial)}</td></tr>
+            <tr><td><strong>Faturamento Líquido de Vendas (Até o momento)</strong></td><td class="text-right">${money(day.faturamentoLiquido)}</td></tr>
             <tr style="font-size: 16px; background-color: #f8f9fa;">
               <td><strong>Saldo em Caixa Estimado (Dinheiro)</strong></td>
-              <td class="text-right" style="font-weight: bold; color: var(--color-primary);">\${money(day.saldoFinalEsperado)}</td>
+              <td class="text-right" style="font-weight: bold; color: var(--color-primary);">${money(day.saldoFinalEsperado)}</td>
             </tr>
             <tr><td colspan="2"><small style="font-style:italic; color:#666;">(Estimado: Troco + Vendas Dinheiro + Suprimento - Sangria)</small></td></tr>
-          \`;
+          `;
         }
 
-        printWindow.document.write(\`
+        printWindow.document.write(`
           <!DOCTYPE html>
           <html>
           <head>
@@ -4524,34 +4524,34 @@
             <div class="report-wrapper">
               <div class="report-header">
                 <div>
-                  \${logoHtml}
-                  <h2 style="margin: 5px 0 0 0; font-size: 20px;">\${nomeFantasia}</h2>
+                  ${logoHtml}
+                  <h2 style="margin: 5px 0 0 0; font-size: 20px;">${nomeFantasia}</h2>
                 </div>
                 <div class="establishment-details">
-                  \${razaoSocial}
-                  \${cnpj}
-                  \${telefone}
-                  \${endereco}
+                  ${razaoSocial}
+                  ${cnpj}
+                  ${telefone}
+                  ${endereco}
                 </div>
               </div>
               
               <div class="report-title-section">
                 <h1>RELATÓRIO FINANCEIRO DE CAIXA</h1>
-                <p>Status: <strong>\${isParcial ? 'PARCIAL (LEITURA X)' : 'CONSOLIDADO (FECHAMENTO Z)'}</strong></p>
+                <p>Status: <strong>${isParcial ? 'PARCIAL (LEITURA X)' : 'CONSOLIDADO (FECHAMENTO Z)'}</strong></p>
               </div>
               
               <table class="meta-table">
                 <tr>
                   <td class="label">Dia Operacional</td>
-                  <td>\${dataStr}</td>
+                  <td>${dataStr}</td>
                   <td class="label">Abertura</td>
-                  <td>\${day.horaAbertura || '--:--'}</td>
+                  <td>${day.horaAbertura || '--:--'}</td>
                 </tr>
                 <tr>
                   <td class="label">Gerado Em</td>
-                  <td>\${dataPrint} às \${horaPrint}</td>
+                  <td>${dataPrint} às ${horaPrint}</td>
                   <td class="label">Fechamento</td>
-                  <td>\${day.horaFechamento || '--:--'}</td>
+                  <td>${day.horaFechamento || '--:--'}</td>
                 </tr>
               </table>
               
@@ -4566,13 +4566,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr><td>Vendas in Pix</td><td class="text-right">\${money(day.vendas.Pix)}</td></tr>
-                      <tr><td>Vendas in Cartão Crédito</td><td class="text-right">\${money(day.vendas.Credito)}</td></tr>
-                      <tr><td>Vendas in Cartão Débito</td><td class="text-right">\${money(day.vendas.Debito)}</td></tr>
-                      <tr><td>Vendas in Dinheiro</td><td class="text-right">\${money(day.vendas.Dinheiro)}</td></tr>
+                      <tr><td>Vendas in Pix</td><td class="text-right">${money(day.vendas.Pix)}</td></tr>
+                      <tr><td>Vendas in Cartão Crédito</td><td class="text-right">${money(day.vendas.Credito)}</td></tr>
+                      <tr><td>Vendas in Cartão Débito</td><td class="text-right">${money(day.vendas.Debito)}</td></tr>
+                      <tr><td>Vendas in Dinheiro</td><td class="text-right">${money(day.vendas.Dinheiro)}</td></tr>
                       <tr style="font-weight: bold; border-top: 1px solid #cbd5e1;">
                         <td>Faturamento Bruto</td>
-                        <td class="text-right">\${money(day.faturamentoBruto)}</td>
+                        <td class="text-right">${money(day.faturamentoBruto)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -4588,11 +4588,11 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr><td>Suprimentos (Entradas)</td><td class="text-right">\${money(day.suprimentos)}</td></tr>
-                      <tr><td>Sangrias (Despesas/Saídas)</td><td class="text-right" style="color:red;">\${money(day.sangrias)}</td></tr>
+                      <tr><td>Suprimentos (Entradas)</td><td class="text-right">${money(day.suprimentos)}</td></tr>
+                      <tr><td>Sangrias (Despesas/Saídas)</td><td class="text-right" style="color:red;">${money(day.sangrias)}</td></tr>
                       <tr style="font-weight: bold; border-top: 1px solid #cbd5e1;">
                         <td>Saldo de Despesas</td>
-                        <td class="text-right" style="color:red;">-\${money(day.sangrias)}</td>
+                        <td class="text-right" style="color:red;">-${money(day.sangrias)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -4603,17 +4603,17 @@
                 <h3>🏁 Conciliação e Fechamento de Caixa</h3>
                 <table class="data-table" style="font-size: 14px;">
                   <tbody>
-                    \${finalSectionHtml}
+                    ${finalSectionHtml}
                   </tbody>
                 </table>
               </div>
               
-              \${day.obs ? \`
+              ${day.obs ? `
               <div class="section-card">
                 <h3>📝 Observações</h3>
-                <p style="font-size: 12px; line-height: 1.5; color: #475569; margin: 0;">\${day.obs}</p>
+                <p style="font-size: 12px; line-height: 1.5; color: #475569; margin: 0;">${day.obs}</p>
               </div>
-              \` : ''}
+              ` : ''}
               
               <div class="footer-signature">
                 <div class="signature-line">
@@ -4639,7 +4639,7 @@
             <\/script>
           </body>
           </html>
-        \`);
+        `);
       }
       
       printWindow.document.close();

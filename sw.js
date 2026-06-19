@@ -18,10 +18,12 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
   // API, logs e HTML: sempre rede — nunca cache
-  if (url.pathname.startsWith('/api/') ||
-      url.pathname === '/logs' ||
+  if (url.pathname.includes('/api/') ||
+      url.pathname.includes('/logs') ||
       url.pathname === '/' ||
-      url.pathname.endsWith('.html')) return;
+      url.pathname.endsWith('/') ||
+      url.pathname.endsWith('.html') ||
+      url.pathname.endsWith('/barflow-osdemo')) return;
 
   // Demais assets (manifest, ícones): cache-first
   e.respondWith(
