@@ -7803,6 +7803,20 @@
     async function resumeBoot() {
       if (isHttp) await loadStateFromServer();
       if (!appState) loadState();
+
+      // === DEMO (GitHub Pages): dia sempre aberto + auto-login gerente ===
+      if (typeof location !== 'undefined' && location.hostname.includes('github.io')) {
+        const hoje = new Date().toLocaleDateString('sv-SE');
+        if (!appState.operacao || !appState.operacao.diaAberto || appState.operacao.dataOperacao !== hoje) {
+          appState.operacao = { diaAberto: true, dataOperacao: hoje, horaAbertura: '18:00', saldoInicial: 300.00 };
+        }
+        if (!currentUser) {
+          currentUser = { role: 'gerente', name: 'Demonstração' };
+          localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      }
+
       if (isHttp) initNetworkSync();
       await initUserSession();
       initTheme();
