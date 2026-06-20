@@ -1676,6 +1676,30 @@
               </table>
             </div>
           </article>
+          <!-- Forma de pagamento + Histórico de dias -->
+          <div class="layout" style="grid-template-columns: 1fr 1.4fr; gap: var(--space-5); margin-top: var(--space-5);">
+            <article class="card panel">
+              <div class="section-title" style="margin-bottom: var(--space-4)"><h3>💳 Por Forma de Pagamento</h3></div>
+              <div id="reportPagamentosList" style="display:flex; flex-direction:column; gap: var(--space-3);"><small class="muted">Sem dados no período.</small></div>
+            </article>
+            <article class="card panel">
+              <div class="section-title" style="margin-bottom: var(--space-4)">
+                <h3>📅 Histórico de Dias</h3>
+                <button class="btn sm" onclick="exportRelatorioCSV()">⬇️ Exportar CSV</button>
+              </div>
+              <div style="overflow-x:auto; max-height:340px; overflow-y:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:var(--text-sm);">
+                  <thead><tr style="border-bottom:2px solid var(--color-border); color:var(--color-text-muted);">
+                    <th style="padding:10px 8px; text-align:left;">Dia</th>
+                    <th style="padding:10px 8px; text-align:center;">Comandas</th>
+                    <th style="padding:10px 8px; text-align:center;">Ticket</th>
+                    <th style="padding:10px 8px; text-align:right;">Faturamento</th>
+                  </tr></thead>
+                  <tbody id="reportHistoricoDiasList"><tr><td colspan="4" style="padding:10px; text-align:center;"><small class="muted">Nenhum dia fechado ainda.</small></td></tr></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
         </div>
 
         <!-- Subview: Estoque -->
@@ -1688,6 +1712,25 @@
             <div id="alertEstoqueBaixo" style="flex: 1; background: rgba(244, 162, 97, 0.1); border: 1px solid var(--color-warning); padding: var(--space-4); border-radius: var(--radius-md); display: flex; align-items: center; gap: var(--space-3); color: var(--color-warning); font-weight: 500;">
               ⚠️ <span id="alertEstoqueBaixoText">Nenhum alerta de baixo estoque.</span>
             </div>
+          </div>
+
+          <!-- Análise de Estoque: Curva ABC, Valor imobilizado, Produtos parados -->
+          <div class="layout" style="grid-template-columns: 1fr 1fr; gap: var(--space-5); margin-bottom: var(--space-5);">
+            <article class="card panel">
+              <div class="section-title" style="margin-bottom: var(--space-4)"><h3>📊 Curva ABC (por receita)</h3></div>
+              <div id="estoqueABCList" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;"><small class="muted">Sem vendas registradas.</small></div>
+            </article>
+            <article class="card panel" style="display:flex; flex-direction:column; gap:var(--space-4);">
+              <div>
+                <div class="section-title" style="margin-bottom: var(--space-3)"><h3>💰 Valor Imobilizado</h3></div>
+                <h2 id="estoqueValorTotal" style="color:var(--color-success); margin:0;">R$ 0,00</h2>
+                <small class="muted">Σ quantidade em estoque × preço de venda</small>
+              </div>
+              <div style="flex-grow:1;">
+                <div class="section-title" style="margin-bottom: var(--space-3)"><h3>🐌 Parados (30 dias)</h3></div>
+                <div id="estoqueParadosList" style="display:flex; flex-direction:column; gap:6px; max-height:150px; overflow-y:auto;"><small class="muted">Todos os produtos tiveram saída.</small></div>
+              </div>
+            </article>
           </div>
 
           <!-- Filtros e Busca -->
@@ -5449,7 +5492,58 @@ var qrcode = function() {
       renderEstoque();
     }
 
+    function renderEstoqueAnalytics() {
+      const cardapio = appState.cardapio || [];
+      // Valor imobilizado (qtd em estoque × preço de venda)
+      let valor = 0;
+      cardapio.forEach(i => {
+        const qty = (i.estoque != null ? i.estoque : (i.estoqueAtual != null ? i.estoqueAtual : 0)) || 0;
+        if (i.controlarEstoque || i.estoqueAtual != null) valor += qty * (i.preco || 0);
+      });
+      const vEl = document.getElementById('estoqueValorTotal');
+      if (vEl) vEl.textContent = money(valor);
+
+      // Curva ABC por receita acumulada (histórico completo)
+      const rev = {};
+      (appState.historicoComandas || []).forEach(c => (c.itens || []).forEach(it => {
+        rev[it.nome] = (rev[it.nome] || 0) + (it.qtd || 0) * (it.preco || 0);
+      }));
+      const ranked = Object.entries(rev).sort((a, b) => b[1] - a[1]);
+      const totalRev = ranked.reduce((s, [, v]) => s + v, 0);
+      const abcEl = document.getElementById('estoqueABCList');
+      if (abcEl) {
+        if (!ranked.length) abcEl.innerHTML = '<small class="muted">Sem vendas registradas.</small>';
+        else {
+          let acc = 0;
+          abcEl.innerHTML = ranked.slice(0, 12).map(([nome, v]) => {
+            acc += v;
+            const cum = totalRev ? acc / totalRev : 0;
+            const classe = cum <= 0.8 ? 'A' : cum <= 0.95 ? 'B' : 'C';
+            const cor = classe === 'A' ? 'var(--color-success)' : classe === 'B' ? 'var(--color-warning)' : 'var(--color-text-muted)';
+            const pct = totalRev ? Math.round(v / totalRev * 100) : 0;
+            return `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:var(--text-sm);"><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span style="display:inline-block; width:18px; height:18px; line-height:18px; text-align:center; border-radius:4px; background:${cor}; color:#0a0a0a; font-weight:800; font-size:11px; margin-right:6px;">${classe}</span>${nome}</span><strong style="white-space:nowrap;">${money(v)} <span class="muted" style="font-weight:400;">${pct}%</span></strong></div>`;
+          }).join('');
+        }
+      }
+
+      // Produtos parados (sem venda nos últimos 30 dias)
+      const limite = new Date(); limite.setDate(limite.getDate() - 30);
+      const limiteStr = limite.toISOString().slice(0, 10);
+      const vendidos30 = new Set();
+      (appState.historicoComandas || []).forEach(c => {
+        if ((c.dataOperacao || '') >= limiteStr) (c.itens || []).forEach(it => vendidos30.add(it.nome));
+      });
+      const parados = cardapio.filter(i => !vendidos30.has(i.nome));
+      const pEl = document.getElementById('estoqueParadosList');
+      if (pEl) {
+        pEl.innerHTML = parados.length
+          ? parados.slice(0, 30).map(i => `<div style="display:flex; justify-content:space-between; font-size:var(--text-sm);"><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${i.nome}</span><span class="muted" style="white-space:nowrap;">${i.categoria || ''}</span></div>`).join('')
+          : '<small class="muted">Todos os produtos tiveram saída em 30 dias.</small>';
+      }
+    }
+
     function renderEstoque() {
+      renderEstoqueAnalytics();
       const tbody = document.getElementById('estoqueTableBody');
       if (!tbody) return;
 
@@ -5937,6 +6031,76 @@ var qrcode = function() {
           chartCard.classList.add('hidden');
         }
       }
+
+      // === Forma de pagamento ===
+      const pagMap = {};
+      comandasHoje.forEach(c => {
+        if (Array.isArray(c.pagamentos) && c.pagamentos.length) {
+          c.pagamentos.forEach(p => { const k = normPag(p.tipo); pagMap[k] = (pagMap[k] || 0) + (p.valor || 0); });
+        } else {
+          const k = normPag(c.metodo); pagMap[k] = (pagMap[k] || 0) + (c.total || 0);
+        }
+      });
+      const pagEl = document.getElementById('reportPagamentosList');
+      if (pagEl) {
+        const entries = Object.entries(pagMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+        const totPag = entries.reduce((s, [, v]) => s + v, 0) || 1;
+        pagEl.innerHTML = entries.length ? entries.map(([k, v]) => {
+          const pct = Math.round(v / totPag * 100);
+          const ic = k.includes('Pix') ? '⚡' : k.includes('rédito') ? '💳' : k.includes('ébito') ? '🏧' : k.includes('Dinheiro') ? '💵' : '🧾';
+          return `<div><div style="display:flex; justify-content:space-between; font-size:var(--text-sm); margin-bottom:4px;"><span>${ic} ${k}</span><strong>${money(v)} (${pct}%)</strong></div><div style="background:var(--color-surface-offset); height:7px; border-radius:4px; overflow:hidden;"><div style="background:var(--color-primary); width:${pct}%; height:100%; border-radius:4px;"></div></div></div>`;
+        }).join('') : '<small class="muted">Sem pagamentos no período.</small>';
+      }
+
+      // === Comparativo vs média histórica ===
+      const fatKpi = document.getElementById('kpiEstoqueRelFaturamento');
+      if (fatKpi && fatKpi.parentElement) {
+        let cmpEl = document.getElementById('reportComparativo');
+        if (!cmpEl) { cmpEl = document.createElement('div'); cmpEl.id = 'reportComparativo'; cmpEl.style.fontSize = 'var(--text-xs)'; cmpEl.style.marginTop = '4px'; fatKpi.parentElement.appendChild(cmpEl); }
+        const diasPrev = (appState.historicoDias || []).filter(d => !targetDates.has(d.dataOperacao));
+        if (diasPrev.length) {
+          const media = diasPrev.reduce((s, d) => s + (d.faturamentoBruto || 0), 0) / diasPrev.length;
+          const diff = media > 0 ? Math.round((faturamentoTotal - media) / media * 100) : 0;
+          const up = diff >= 0;
+          cmpEl.innerHTML = `<span style="color:${up ? 'var(--color-success)' : 'var(--color-error)'};font-weight:700;">${up ? '▲' : '▼'} ${Math.abs(diff)}%</span> <span class="muted">vs média (${money(media)})</span>`;
+        } else cmpEl.innerHTML = '<span class="muted">Sem histórico p/ comparar</span>';
+      }
+
+      // === Histórico de dias fechados ===
+      const histEl = document.getElementById('reportHistoricoDiasList');
+      if (histEl) {
+        const diasH = [...(appState.historicoDias || [])].sort((a, b) => (b.dataOperacao || '').localeCompare(a.dataOperacao || ''));
+        histEl.innerHTML = diasH.length ? diasH.map(d => {
+          const cmds = (appState.historicoComandas || []).filter(c => c.dataOperacao === d.dataOperacao);
+          const tkt = cmds.length ? (d.faturamentoBruto || 0) / cmds.length : 0;
+          return `<tr style="border-bottom:1px solid var(--color-border);"><td style="padding:9px 8px;">${(d.dataOperacao || '').split('-').reverse().join('/')}</td><td style="padding:9px 8px; text-align:center;">${cmds.length}</td><td style="padding:9px 8px; text-align:center;">${money(tkt)}</td><td style="padding:9px 8px; text-align:right; font-weight:700;">${money(d.faturamentoBruto || 0)}</td></tr>`;
+        }).join('') : '<tr><td colspan="4" style="padding:10px; text-align:center;"><small class="muted">Nenhum dia fechado ainda.</small></td></tr>';
+      }
+    }
+
+    function normPag(t) {
+      t = (t || '').toLowerCase();
+      if (t.includes('pix')) return 'Pix';
+      if (t.includes('créd') || t.includes('cred')) return 'Cartão crédito';
+      if (t.includes('déb') || t.includes('deb')) return 'Cartão débito';
+      if (t.includes('dinh')) return 'Dinheiro';
+      return t ? (t.charAt(0).toUpperCase() + t.slice(1)) : 'Outros';
+    }
+
+    function exportRelatorioCSV() {
+      const rows = [['Data', 'Mesa', 'Garçom', 'Itens', 'Subtotal', 'Serviço', 'Total', 'Pagamento']];
+      (appState.historicoComandas || []).forEach(c => {
+        const itens = (c.itens || []).map(i => `${i.qtd}x ${i.nome}`).join('; ');
+        const pag = Array.isArray(c.pagamentos) && c.pagamentos.length ? c.pagamentos.map(p => `${p.tipo}:${(p.valor || 0).toFixed(2)}`).join(' / ') : (c.metodo || '');
+        rows.push([c.dataOperacao || '', c.mesa || '', c.garcom || '', itens, (c.subtotal || 0).toFixed(2), (c.servico || 0).toFixed(2), (c.total || 0).toFixed(2), pag]);
+      });
+      if (rows.length === 1) { showToast('Nenhuma comanda para exportar.', 'warning'); return; }
+      const csv = rows.map(r => r.map(f => `"${String(f).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `barflow_relatorio_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast(`Relatório exportado (${rows.length - 1} comandas).`, 'success');
     }
 
     // Exporta escopo global para o HTML modal
