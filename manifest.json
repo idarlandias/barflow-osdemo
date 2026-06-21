@@ -4,21 +4,21 @@
   "description": "Sistema offline de gestão de salão, mesas, cardápio e caixa.",
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 24 24' fill='none'><rect width='24' height='24' rx='6' fill='%2301696f'/><path d='M6 18V6h4c2.5 0 4 1.2 4 3.3 0 1.5-.8 2.4-1.9 2.8 1.6.3 2.9 1.4 2.9 3.3C15 17 13.4 18 10.8 18H6Z' stroke='white' stroke-width='1.8'/><path d='M10 8.2H8.6v2.8H10c1.1 0 1.8-.5 1.8-1.4S11.2 8.2 10 8.2Z' fill='white'/><path d='M10.3 12.9H8.6v3.1h1.8c1.3 0 2-.5 2-1.5 0-1-.8-1.6-2.1-1.6Z' fill='white'/><path d='M17 7v10' stroke='white' stroke-width='1.8' stroke-linecap='round'/></svg>",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "favicon.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 24 24' fill='none'><rect width='24' height='24' rx='6' fill='%2301696f'/><path d='M6 18V6h4c2.5 0 4 1.2 4 3.3 0 1.5-.8 2.4-1.9 2.8 1.6.3 2.9 1.4 2.9 3.3C15 17 13.4 18 10.8 18H6Z' stroke='white' stroke-width='1.8'/><path d='M10 8.2H8.6v2.8H10c1.1 0 1.8-.5 1.8-1.4S11.2 8.2 10 8.2Z' fill='white'/><path d='M10.3 12.9H8.6v3.1h1.8c1.3 0 2-.5 2-1.5 0-1-.8-1.6-2.1-1.6Z' fill='white'/><path d='M17 7v10' stroke='white' stroke-width='1.8' stroke-linecap='round'/></svg>",
+      "src": "barflow-emblem.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "./bar-restaurante-manager.html",
   "background_color": "#171614",
-  "theme_color": "#01696f",
+  "theme_color": "#ff5a00",
   "display": "standalone",
   "orientation": "portrait-primary"
 }

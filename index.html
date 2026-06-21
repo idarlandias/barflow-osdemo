@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BarFlow OS - Gestão Premium</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="apple-touch-icon" href="favicon.png" />
-
+  
   <!-- SEO & PWA Meta Tags -->
   <meta name="description" content="Sistema local de alta performance para controle de comandas, mesas, cardápio e caixa, projetado para funcionar 100% offline." />
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
   <meta name="theme-color" content="#0a0908" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -1028,10 +1028,8 @@
   <div id="loginOverlay" class="modal-overlay" style="z-index: 10000; display: none; background: rgba(5, 4, 3, 0.85); backdrop-filter: blur(20px);">
     <div class="card" style="width: 90%; max-width: 440px; padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-5); text-align: center; border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-premium);">
       <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-2);">
-        <div class="logo" style="width: 56px; height: 56px; border-radius: 16px; margin-bottom: 8px;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 18V6h4c2.5 0 4 1.2 4 3.3 0 1.5-.8 2.4-1.9 2.8 1.6.3 2.9 1.4 2.9 3.3C15 17 13.4 18 10.8 18H6Z"/>
-          </svg>
+        <div class="logo" style="width: 56px; height: 56px; border-radius: 16px; margin-bottom: 8px; background:transparent; box-shadow:none; overflow:hidden;">
+          <img src="favicon.png" alt="BarFlow" style="width:100%;height:100%;object-fit:contain;" />
         </div>
         <h2 style="font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: -0.5px;">Acesso ao BarFlow OS</h2>
         <p class="muted" style="font-size: var(--text-sm);">Escolha o perfil de acesso para iniciar</p>
@@ -1222,19 +1220,8 @@
   <div class="app">
     <!-- Sidebar Desktop -->
     <aside class="sidebar">
-      <div class="brand">
-        <div class="logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-label="Logo">
-            <path d="M6 18V6h4c2.5 0 4 1.2 4 3.3 0 1.5-.8 2.4-1.9 2.8 1.6.3 2.9 1.4 2.9 3.3C15 17 13.4 18 10.8 18H6Z" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M10 8.2H8.6v2.8H10c1.1 0 1.8-.5 1.8-1.4S11.2 8.2 10 8.2Z" fill="currentColor"/>
-            <path d="M10.3 12.9H8.6v3.1h1.8c1.3 0 2-.5 2-1.5 0-1-.8-1.6-2.1-1.6Z" fill="currentColor"/>
-            <path d="M17 7v10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1>BarFlow OS</h1>
-          <p>Operação local offline</p>
-        </div>
+      <div class="brand" style="justify-content:center;">
+        <img src="barflow-logo.png" alt="BarFlow OS" style="width:100%; max-width:150px; height:auto; display:block; background:#fff; border-radius:14px; padding:8px;" />
       </div>
       
       <nav class="nav">
@@ -1290,6 +1277,7 @@
             <div class="muted" id="topbarDayStatus" style="font-weight:700; color:var(--color-primary);">Dia: Fechado</div>
             <div class="muted" id="topbarBackupStatus" style="font-size:12px;">Auto-backup: Aguardando pasta</div>
           </div>
+          <span id="connBadge" title="Estado da conexão com o servidor" style="display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-full);"></span>
           <span id="updateBadge" style="display:none;align-items:center;gap:4px;background:var(--color-warning);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-full);cursor:pointer;" onclick="showToast('Reinicie o sistema (feche e abra o BarFlow OS) para aplicar a atualização.','info')">🔄 ATUALIZAÇÃO</span>
           <button class="btn sm" id="btnChangeProfile" style="padding: 6px 10px; font-size: 11px;" onclick="logoutUser()">Trocar Perfil</button>
         </div>
@@ -1895,6 +1883,31 @@
                 </div>
               </div>
             </div>
+          </article>
+          <article class="card panel" id="diagnosticoCard">
+            <div class="section-title">
+              <h3>Diagnóstico do Sistema 🩺</h3>
+              <button class="btn sm" onclick="renderDiagnostico()">Atualizar</button>
+            </div>
+            <div id="diagnosticoBody">
+              <!-- Gerado por JS (runBootHealthCheck / renderDiagnostico) -->
+            </div>
+          </article>
+
+          <article class="card panel" id="kitchenPrinterCard">
+            <div class="section-title">
+              <h3>Impressora da Cozinha 🖨️</h3>
+              <button class="btn sm" onclick="loadPrintersList()">Atualizar lista</button>
+            </div>
+            <p class="muted" style="margin-bottom: var(--space-4)">A comanda sai automaticamente nesta impressora (instalada no PC do servidor) quando o garçom envia o pedido. Selecione a impressora da cozinha e ative.</p>
+            <div class="form-group">
+              <label for="cfgKitchenPrinter">Impressora</label>
+              <select id="cfgKitchenPrinter" class="form-control"><option value="">— carregando… —</option></select>
+            </div>
+            <label style="display:flex; gap:8px; align-items:center; margin: var(--space-3) 0;">
+              <input type="checkbox" id="cfgPrintEnabled"> Imprimir comanda da cozinha automaticamente
+            </label>
+            <button class="btn primary sm" onclick="savePrintConfig()">Salvar impressora</button>
           </article>
         </div>
       </section>
@@ -4259,6 +4272,44 @@ var qrcode = function() {
 
 </script>
   <script>
+    // === REDE DE SEGURANÇA (Camada 1) — error boundary global ===
+    // Objetivo: nunca mais tela preta por um erro de JS. Loga em ring buffer,
+    // avisa discretamente e tenta recuperar re-renderizando a view ativa.
+    (function installErrorBoundary() {
+      var ERRLOG_KEY = 'BARFLOW_ERRORLOG';
+      var lastRecover = 0;
+      function logError(kind, msg, extra) {
+        try {
+          var buf = JSON.parse(localStorage.getItem(ERRLOG_KEY) || '[]');
+          buf.push({ t: new Date().toISOString(), kind: kind, msg: String(msg || '').slice(0, 500), extra: extra || null });
+          if (buf.length > 50) buf = buf.slice(-50);
+          localStorage.setItem(ERRLOG_KEY, JSON.stringify(buf));
+        } catch (e) { /* localStorage cheio/indisponível — ignora p/ não recursar */ }
+      }
+      function tryRecover() {
+        var now = Date.now();
+        if (now - lastRecover < 3000) return; // evita loop de recuperação
+        lastRecover = now;
+        try {
+          if (typeof showToast === 'function') showToast('Ocorreu um erro, recuperando…', 'error');
+          if (typeof renderActiveView === 'function') renderActiveView();
+        } catch (e) { /* falha na recuperação — não propaga */ }
+      }
+      window.addEventListener('error', function (ev) {
+        var m = ev && ev.error ? (ev.error.stack || ev.error.message) : (ev && ev.message);
+        logError('error', m, { src: ev && ev.filename, line: ev && ev.lineno, col: ev && ev.colno });
+        tryRecover();
+      });
+      window.addEventListener('unhandledrejection', function (ev) {
+        var r = ev && ev.reason;
+        logError('unhandledrejection', r && r.stack ? r.stack : r);
+        tryRecover();
+      });
+      // Exposto p/ painel de diagnóstico em Configurações
+      window.getErrorLog = function () { try { return JSON.parse(localStorage.getItem(ERRLOG_KEY) || '[]'); } catch (e) { return []; } };
+      window.clearErrorLog = function () { try { localStorage.removeItem(ERRLOG_KEY); } catch (e) {} };
+    })();
+
     // --- Banco de Dados e Estados Padrão ---
     const DB_NAME = 'BarFlowOS_DB';
     const DB_VERSION = 1;
@@ -4503,7 +4554,43 @@ var qrcode = function() {
     // --- Gerenciador de Estado Principal ---
     // Configuração de Sincronização em Rede Local (Zero Dependências)
     var isHttp = typeof location !== 'undefined' && location.protocol.startsWith('http');
+    var isDemo = typeof location !== 'undefined' && location.hostname.includes('github.io'); // demo serverless: sem sync/health
     var sseSource = null;
+
+    // === SYNC RESILIENTE (Camada 2) ===
+    var connState = 'offline';        // 'online' | 'reconectando' | 'offline' | 'pendente'
+    var pendingSync = false;          // há alterações locais ainda não confirmadas pelo servidor
+    var lastRev = null;               // revisão do estado vista por último (base p/ merge no servidor)
+    var flushTimer = null;
+
+    function setConnState(s) {
+      connState = s;
+      var badge = document.getElementById('connBadge');
+      if (!badge) return;
+      if (!isHttp || isDemo) { badge.style.display = 'none'; return; }
+      var map = {
+        online:       { txt: '🟢 Online',        bg: 'var(--color-success, #22c55e)' },
+        reconectando: { txt: '🟡 Reconectando…', bg: 'var(--color-warning, #f59e0b)' },
+        offline:      { txt: '🔴 Offline',       bg: 'var(--color-danger, #ef4444)' },
+        pendente:     { txt: '🟠 Salvando…',     bg: 'var(--color-warning, #f59e0b)' }
+      };
+      var m = map[s] || map.offline;
+      var extra = pendingSync ? ' • alterações pendentes' : '';
+      badge.textContent = m.txt + extra;
+      badge.style.background = m.bg;
+      badge.style.color = '#fff';
+      badge.style.display = 'inline-flex';
+    }
+
+    function scheduleFlush() {
+      if (flushTimer) return;
+      flushTimer = setInterval(() => { if (pendingSync) flushPending(); }, 5000);
+    }
+    async function flushPending() {
+      if (!pendingSync || !isHttp) return;
+      const ok = await saveStateToServer();
+      if (ok) { pendingSync = false; setConnState('online'); }
+    }
 
     function fixStaleDay(st) {
       if (!st || !st.operacao || !st.operacao.diaAberto || !st.operacao.dataOperacao) return st;
@@ -4521,11 +4608,12 @@ var qrcode = function() {
     }
 
     async function loadStateFromServer() {
-      if (!isHttp || typeof fetch === 'undefined') return false;
+      if (!isHttp || isDemo || typeof fetch === 'undefined') return false;
       try {
         const response = await fetch('/api/state');
         if (response.ok) {
           appState = fixStaleDay(await response.json());
+          if (appState && appState._rev !== undefined) lastRev = appState._rev;
           localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
           console.log('[Sincronização] Estado carregado com sucesso do servidor local.');
           return true;
@@ -4537,13 +4625,14 @@ var qrcode = function() {
     }
 
     async function saveStateToServer() {
-      if (!isHttp || typeof fetch === 'undefined') return false;
+      if (!isHttp || isDemo || typeof fetch === 'undefined') return false;
       try {
         const response = await fetch('/api/state', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + (sessionToken || '')
+            'Authorization': 'Bearer ' + (sessionToken || ''),
+            'X-Base-Rev': (lastRev === null ? '' : String(lastRev))
           },
           body: JSON.stringify(appState)
         });
@@ -4554,12 +4643,29 @@ var qrcode = function() {
           return false;
         }
         if (response.ok) {
+          try {
+            const data = await response.json();
+            if (data && data.rev !== undefined) lastRev = data.rev;
+            // servidor pode ter mesclado mudanças concorrentes — adota estado canônico
+            if (data && data.state) {
+              const savedUser = currentUser;
+              appState = fixStaleDay(data.state);
+              currentUser = savedUser;
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            }
+          } catch (e) { /* resposta sem corpo — ok */ }
+          pendingSync = false;
+          setConnState('online');
           console.log('[Sincronização] Estado persistido no servidor e replicado.');
           return true;
         }
       } catch (err) {
         console.error('[Sincronização] Erro ao enviar estado para o servidor:', err);
       }
+      // Falhou: marca pendente p/ re-tentar no reconnect/periódico
+      pendingSync = true;
+      setConnState(connState === 'online' ? 'pendente' : connState);
+      scheduleFlush();
       return false;
     }
 
@@ -4579,9 +4685,17 @@ var qrcode = function() {
           const payload = JSON.parse(e.data);
           if (payload.type === 'init' || payload.type === 'update') {
             console.log('[Sincronização] Atualização recebida do servidor local.');
+            setConnState('online');
+            // Guarda: se temos alterações locais pendentes, NÃO sobrescreve —
+            // empurra o local (o servidor faz merge 3-vias) e ignora este update.
+            if (pendingSync && payload.type === 'update') {
+              flushPending();
+              return;
+            }
             const savedUser = currentUser;
             const oldOrders = prevKitchenOrders.slice();
             appState = fixStaleDay(payload.state);
+            if (appState && appState._rev !== undefined) lastRev = appState._rev;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
             currentUser = savedUser;
             prevKitchenOrders = (appState.pedidosCozinha || []).map(p => ({id: p.id, status: p.status}));
@@ -4620,9 +4734,15 @@ var qrcode = function() {
         }
       });
       
+      sseSource.onopen = () => {
+        setConnState('online');
+        if (pendingSync) flushPending();
+      };
       sseSource.onerror = (err) => {
         console.warn('[Sincronização] Conexão SSE perdida. Tentando reconectar automaticamente...');
+        setConnState(pendingSync ? 'pendente' : 'reconectando');
       };
+      scheduleFlush();
     }
 
     function loadState() {
@@ -4730,6 +4850,7 @@ var qrcode = function() {
           });
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        window.lastLocalSaveOk = true;
         hasMovementSinceLastBackup = true;
         updateMovementIndicator();
         updateKPIs();
@@ -4748,7 +4869,11 @@ var qrcode = function() {
         }
       } catch (err) {
         console.error('Erro de gravação no localStorage:', err);
-        showToast('Erro gravando dados locais!', 'error');
+        var quota = err && (err.name === 'QuotaExceededError' || err.code === 22 || err.code === 1014);
+        showToast(quota
+          ? 'Sem espaço para salvar! Feche o dia ou libere memória.'
+          : 'Não consegui salvar os dados localmente!', 'error');
+        window.lastLocalSaveOk = false;
       }
     }
 
@@ -8891,6 +9016,80 @@ var qrcode = function() {
 
       document.getElementById('cfgTaxaServico').value = appState.configuracoes.taxaServico !== undefined ? appState.configuracoes.taxaServico : 10.0;
       document.getElementById('cfgCouvert').value = appState.configuracoes.couvert !== undefined ? appState.configuracoes.couvert : 0.0;
+
+      renderDiagnostico();
+      renderPrinterConfig();
+    }
+
+    // === IMPRESSÃO DA COZINHA — configuração da impressora (servidor) ===
+    async function renderPrinterConfig() {
+      const card = document.getElementById('kitchenPrinterCard');
+      if (!card) return;
+      if (!isHttp || isDemo) { card.style.display = 'none'; return; }
+      card.style.display = '';
+      await loadPrintersList();
+    }
+    async function loadPrintersList() {
+      const sel = document.getElementById('cfgKitchenPrinter');
+      const chk = document.getElementById('cfgPrintEnabled');
+      if (!sel) return;
+      let printers = [], cfg = { kitchenPrinter: '', enabled: false };
+      try { printers = (await (await fetch('/api/printers', { cache: 'no-store' })).json()).printers || []; } catch (e) {}
+      try { cfg = await (await fetch('/api/print-config', { cache: 'no-store' })).json(); } catch (e) {}
+      const opts = ['<option value="">— Nenhuma (não imprimir) —</option>']
+        .concat(printers.map(p => `<option value="${p.replace(/"/g, '&quot;')}">${p}</option>`));
+      // se a salva não está na lista (impressora offline), mantém como opção
+      if (cfg.kitchenPrinter && printers.indexOf(cfg.kitchenPrinter) === -1) {
+        opts.push(`<option value="${cfg.kitchenPrinter.replace(/"/g, '&quot;')}">${cfg.kitchenPrinter} (não encontrada agora)</option>`);
+      }
+      sel.innerHTML = opts.join('');
+      sel.value = cfg.kitchenPrinter || '';
+      if (chk) chk.checked = !!cfg.enabled;
+    }
+    async function savePrintConfig() {
+      const sel = document.getElementById('cfgKitchenPrinter');
+      const chk = document.getElementById('cfgPrintEnabled');
+      const body = { kitchenPrinter: sel ? sel.value : '', enabled: chk ? chk.checked : false };
+      try {
+        const res = await fetch('/api/print-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (sessionToken || '') },
+          body: JSON.stringify(body)
+        });
+        if (res.ok) showToast('Impressora da cozinha salva!', 'success');
+        else showToast('Não consegui salvar a impressora.', 'error');
+      } catch (e) { showToast('Erro ao salvar impressora.', 'error'); }
+    }
+
+    // === REDE DE SEGURANÇA (Camada 1) — painel de diagnóstico ===
+    async function renderDiagnostico() {
+      const body = document.getElementById('diagnosticoBody');
+      if (!body) return;
+      let h = lastHealth;
+      if (isHttp) {
+        try { h = await (await fetch('/api/health', { cache: 'no-store' })).json(); lastHealth = h; } catch (e) { h = { error: String(e && e.message || e) }; }
+      } else {
+        h = { db: true, diskWritable: window.lastLocalSaveOk !== false, lastSaveOk: window.lastLocalSaveOk !== false, clockOk: true, version: 'offline', note: 'Modo local (sem servidor)' };
+      }
+      const row = (label, ok, extra) =>
+        `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--color-border);">
+          <span>${label}${extra ? ' <small class="muted">'+extra+'</small>' : ''}</span>
+          <strong style="color:${ok ? 'var(--color-success, #22c55e)' : 'var(--color-danger, #ef4444)'}">${ok ? '✓ OK' : '✗ FALHA'}</strong>
+        </div>`;
+      if (h && h.error) {
+        body.innerHTML = `<p class="muted">Não foi possível obter o diagnóstico do servidor: ${h.error}</p>`;
+        return;
+      }
+      const errLog = (typeof window.getErrorLog === 'function') ? window.getErrorLog() : [];
+      body.innerHTML =
+        row('Banco de dados carregado', h.db !== false) +
+        row('Gravação em disco', h.diskWritable !== false) +
+        row('Última gravação salva', h.lastSaveOk !== false, h.lastSaveErr || '') +
+        row('Relógio do computador', h.clockOk !== false) +
+        (h.certOk !== undefined ? row('HTTPS / certificado', h.certOk !== false) : '') +
+        `<div style="display:flex;justify-content:space-between;padding:8px 0;"><span>Versão</span><strong>${h.version || '-'}</strong></div>` +
+        (h.uptime !== undefined ? `<div style="display:flex;justify-content:space-between;padding:8px 0;"><span>Tempo no ar</span><strong>${Math.floor(h.uptime/60)} min</strong></div>` : '') +
+        `<div style="margin-top:10px;"><small class="muted">Erros registrados: ${errLog.length}${errLog.length ? ' — <a href="#" onclick="window.clearErrorLog&&window.clearErrorLog();renderDiagnostico();return false;">limpar</a>' : ''}</small></div>`;
     }
 
     function saveConfiguracoesComerciais() {
@@ -8913,6 +9112,7 @@ var qrcode = function() {
       appState.configuracoes.couvert = isNaN(couvert) ? 0.0 : couvert;
 
       saveState();
+      updateBrandHeader();
       showToast('Configurações comerciais salvas com sucesso!', 'success');
     }
 
@@ -9171,6 +9371,34 @@ var qrcode = function() {
       garcomDraft[mesaId][idx].obs = value;
     }
 
+    // Imprime a comanda da cozinha numa impressora (não fiscal) — 100% client-side,
+    // funciona OFFLINE (sem servidor). Usa o #thermalPrintReceipt (80mm) via window.print().
+    function imprimirComandaCozinha(mesa, itens) {
+      try {
+        const el = document.getElementById('thermalPrintReceipt');
+        if (!el || !itens || !itens.length) return;
+        const agora = new Date();
+        const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const data = agora.toLocaleDateString('pt-BR');
+        const linhas = itens.map(function (i) {
+          return '<div style="font-size:15px;font-weight:bold;margin:2px 0;">' + (i.qtd || 1) + 'x  ' + i.nome + '</div>'
+            + (i.obs ? '<div style="font-size:12px;padding-left:10px;">&raquo; ' + i.obs + '</div>' : '');
+        }).join('');
+        el.innerHTML =
+          '<div style="text-align:center;font-weight:bold;font-size:18px;">*** COZINHA ***</div>'
+          + '<div style="text-align:center;font-size:12px;">' + data + ' ' + hora + '</div>'
+          + '<hr>'
+          + '<div style="font-size:16px;font-weight:bold;">MESA: ' + (mesa ? mesa.nome : '-') + '</div>'
+          + '<div style="font-size:12px;">Gar&ccedil;om: ' + (currentUser ? currentUser.name : '-') + '</div>'
+          + '<hr>'
+          + linhas
+          + '<hr>'
+          + '<div style="text-align:center;font-size:10px;">BarFlow OS</div>';
+        window.print();
+        setTimeout(function () { el.innerHTML = ''; }, 500);
+      } catch (e) { console.error('Falha ao imprimir comanda da cozinha:', e); }
+    }
+
     function enviarPedidoCozinha() {
       const id = garcomActiveMesaId;
       const draft = garcomDraft[id] || [];
@@ -9247,6 +9475,8 @@ var qrcode = function() {
       renderGarcomMesaDetails(id);
       if (itensPreparados.length > 0) {
         showToast('🚀 Pedido enviado para a Cozinha! ' + itensPreparados.length + ' item(s).', 'success');
+        // A impressão da comanda sai pelo PC do servidor (Electron), automaticamente,
+        // ao detectar o novo pedido na fila — ver main.js. Não imprime no aparelho do garçom.
       } else {
         showToast('✅ Bebidas confirmadas e lançadas com sucesso!', 'success');
       }
@@ -10353,7 +10583,19 @@ var qrcode = function() {
     }
 
     // --- Renderização Dinâmica Geral baseada no usuário logado ---
+    // Marca da sidebar: nome do estabelecimento em destaque (cara do cliente),
+    // com "BarFlow OS" pequeno; sem cadastro, mantém o padrão.
+    function updateBrandHeader() {
+      const est = appState && appState.estabelecimento;
+      const nome = est && est.nomeFantasia ? String(est.nomeFantasia).trim() : '';
+      const t = document.getElementById('brandTitle');
+      const s = document.getElementById('brandSubtitle');
+      if (t) t.textContent = nome || 'BarFlow OS';
+      if (s) s.textContent = nome ? 'BarFlow OS' : 'Operação local offline';
+    }
+
     function renderActiveView() {
+      updateBrandHeader();
       updateDayStatusUI();
       updateKPIs();
       
@@ -10460,21 +10702,7 @@ var qrcode = function() {
     async function resumeBoot() {
       if (isHttp) await loadStateFromServer();
       if (!appState) loadState();
-
-      // === DEMO (GitHub Pages): dia sempre aberto + auto-login gerente ===
-      if (typeof location !== 'undefined' && location.hostname.includes('github.io')) {
-        const hoje = new Date().toLocaleDateString('sv-SE');
-        if (!appState.operacao || !appState.operacao.diaAberto || appState.operacao.dataOperacao !== hoje) {
-          appState.operacao = { diaAberto: true, dataOperacao: hoje, horaAbertura: '18:00', saldoInicial: 300.00 };
-        }
-        if (!currentUser) {
-          currentUser = { role: 'gerente', name: 'Demonstração' };
-          localStorage.setItem('BARFLOW_USER', JSON.stringify(currentUser));
-        }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      }
-
-      if (isHttp) initNetworkSync();
+      if (isHttp && !isDemo) initNetworkSync();
       await initUserSession();
       initTheme();
       try {
@@ -10546,6 +10774,28 @@ var qrcode = function() {
         }
       }
       await resumeBoot();
+      runBootHealthCheck();
+    }
+
+    // === REDE DE SEGURANÇA (Camada 1) — autodiagnóstico no boot ===
+    var lastHealth = null;
+    async function runBootHealthCheck() {
+      if (!isHttp || isDemo) return;
+      try {
+        const res = await fetch('/api/health', { cache: 'no-store' });
+        const h = await res.json();
+        lastHealth = h;
+        const problemas = [];
+        if (h.diskWritable === false) problemas.push('disco sem permissão de escrita');
+        if (h.lastSaveOk === false) problemas.push('falha ao salvar o banco');
+        if (h.clockOk === false) problemas.push('relógio do computador parece incorreto');
+        if (h.db === false) problemas.push('banco de dados não carregou');
+        if (problemas.length) {
+          showToast('Atenção: ' + problemas.join('; ') + '. Veja Configurações > Diagnóstico.', 'error');
+        }
+      } catch (e) {
+        lastHealth = { error: String(e && e.message || e) };
+      }
     }
 
     window.addEventListener('load', boot);
