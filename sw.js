@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barflow-os-v3';
+const CACHE_NAME = 'barflow-os-v4';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(self.skipWaiting());
@@ -20,21 +20,19 @@ self.addEventListener('fetch', (e) => {
   // API e logs: SEMPRE rede, nunca cache (dados ao vivo).
   if (url.pathname.startsWith('/api/') || url.pathname === '/logs') return;
 
-  // App-shell (raiz e .html): stale-while-revalidate.
-  // Online: serve do cache na hora E atualiza em segundo plano (próxima abertura pega a nova).
-  // Offline (servidor/PC fora): serve a última cópia em cache → o app ABRE mesmo sem o servidor.
+  // App-shell (raiz e .html): NETWORK-FIRST.
+  // Online: SEMPRE busca do servidor (a atualização aparece na hora) e atualiza o cache.
+  // Offline (servidor/PC fora): cai pro cache → o app ABRE mesmo sem o servidor.
   const isShell = url.pathname === '/' || url.pathname.endsWith('.html');
   if (isShell) {
     e.respondWith(
-      caches.open(CACHE_NAME).then(cache =>
-        cache.match(e.request).then(cached => {
-          const network = fetch(e.request).then(res => {
-            if (res && res.status === 200) cache.put(e.request, res.clone());
-            return res;
-          }).catch(() => cached); // sem rede → usa o cache
-          return cached || network; // tem cache? entrega já e revalida atrás; senão espera a rede
-        })
-      )
+      fetch(e.request).then(res => {
+        if (res && res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+        }
+        return res;
+      }).catch(() => caches.match(e.request)) // sem rede → última cópia em cache
     );
     return;
   }

@@ -1321,6 +1321,7 @@
             <small class="muted">Sem vendas registradas ainda hoje.</small>
           </div>
           <button class="btn sm" style="margin-top: var(--space-3);" onclick="openQrCardapioModal()">📱 Gerar QR do Cardápio</button>
+          <button class="btn sm" style="margin-top: var(--space-2);" onclick="openQrAcessoModal()">📲 QR de Acesso (Garçom/Cozinha)</button>
         </article>
       </div>
 
@@ -1519,7 +1520,10 @@
         <article class="card panel">
           <div class="section-title">
             <h3>Cardápio do Estabelecimento</h3>
-            <button class="btn primary" id="newMenuItem">Novo Produto</button>
+            <div class="btn-row">
+              <button class="btn sm" onclick="carregarCardapioModelo()">📋 Carregar Cardápio Modelo</button>
+              <button class="btn primary" id="newMenuItem">Novo Produto</button>
+            </div>
           </div>
           <!-- === MELHORIA 4: Abas de Categorias === -->
           <div id="menuCategoriesTabs" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-4); margin-top: var(--space-3);"></div>
@@ -1733,6 +1737,8 @@
               <button class="btn sm" id="btnFilterEstoqueEsgotado" onclick="filterEstoqueList('esgotado')">Esgotados ❌</button>
               <button class="btn sm" id="btnFilterEstoqueControlado" onclick="filterEstoqueList('controlado')">Controlados</button>
             </div>
+            <button class="btn primary sm" onclick="openRecebimentoModal()">📥 Receber Mercadoria</button>
+            <button class="btn sm" onclick="imprimirEstoque()">🖨️ Imprimir Estoque</button>
           </div>
 
           <!-- Grid de estoque -->
@@ -1762,8 +1768,17 @@
       <section id="configuracoes" class="view hidden">
         <div class="layout" style="grid-template-columns: 1.2fr 1fr;">
           <article class="card panel">
+            <div id="dbBackupStatusPanel" style="background:var(--color-surface-offset); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:var(--space-4); margin-bottom:var(--space-5);">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <strong style="font-size:var(--text-md);">🛡️ Backup do Banco de Dados</strong>
+                <span id="dbBackupBadge" class="status-backup-badge" style="background:rgba(95,168,56,0.15); color:var(--color-success);">verificando…</span>
+              </div>
+              <p class="muted" style="font-size:var(--text-xs); margin:0 0 8px;">Cópia de segurança automática e criptografada do banco — feita pelo próprio sistema, sem precisar configurar nada.</p>
+              <div id="dbBackupStatusBody"><small class="muted">Carregando…</small></div>
+            </div>
+
             <div class="section-title">
-              <h3>Backup Automático a cada 60 Segundos</h3>
+              <h3>Backup em Pasta (opcional)</h3>
               <span class="status status-backup-badge inactive" id="backupStatusBadge">Inativo</span>
             </div>
             <p class="muted" style="margin-bottom: var(--space-4)">Vincule uma pasta local no seu computador. Quando houver qualquer movimentação (abertura, pedido ou pagamento), faremos um backup silencioso e offline em formato JSON a cada 60 segundos.</p>
@@ -4349,6 +4364,82 @@ var qrcode = function() {
       };
     }
 
+    // === CARDÁPIO MODELO (barzinho completo) — usado no botão "Carregar Cardápio Modelo" ===
+    // Todos com controle de estoque + estoque atual/mínimo razoáveis, pra ir pronto pro cliente.
+    const MENU_MODELO = [
+      // — Cervejas —
+      {categoria:'Cervejas', nome:'Heineken Long Neck 330ml', preco:13.00, controlarEstoque:true, estoque:120, estoqueMinimo:24},
+      {categoria:'Cervejas', nome:'Stella Artois Long Neck 330ml', preco:12.00, controlarEstoque:true, estoque:120, estoqueMinimo:24},
+      {categoria:'Cervejas', nome:'Corona Extra 330ml', preco:14.00, controlarEstoque:true, estoque:96, estoqueMinimo:24},
+      {categoria:'Cervejas', nome:'Budweiser Long Neck 330ml', preco:11.00, controlarEstoque:true, estoque:120, estoqueMinimo:24},
+      {categoria:'Cervejas', nome:'Original 600ml', preco:16.00, controlarEstoque:true, estoque:72, estoqueMinimo:18},
+      {categoria:'Cervejas', nome:'Brahma Duplo Malte 350ml', preco:8.00, controlarEstoque:true, estoque:144, estoqueMinimo:36},
+      {categoria:'Cervejas', nome:'Spaten 350ml', preco:9.00, controlarEstoque:true, estoque:144, estoqueMinimo:36},
+      {categoria:'Cervejas', nome:'Chopp Pilsen 300ml', preco:10.00, controlarEstoque:true, estoque:200, estoqueMinimo:40},
+      {categoria:'Cervejas', nome:'Chopp Pilsen 500ml', preco:15.00, controlarEstoque:true, estoque:200, estoqueMinimo:40},
+      {categoria:'Cervejas', nome:'Chopp IPA Artesanal 500ml', preco:19.00, controlarEstoque:true, estoque:100, estoqueMinimo:20},
+      // — Drinks & Coquetéis —
+      {categoria:'Drinks & Coquetéis', nome:'Caipirinha de Limão', preco:18.00, controlarEstoque:true, estoque:60, estoqueMinimo:15},
+      {categoria:'Drinks & Coquetéis', nome:'Caipiroska de Frutas Vermelhas', preco:22.00, controlarEstoque:true, estoque:50, estoqueMinimo:12},
+      {categoria:'Drinks & Coquetéis', nome:'Mojito', preco:24.00, controlarEstoque:true, estoque:50, estoqueMinimo:12},
+      {categoria:'Drinks & Coquetéis', nome:'Gin Tônica', preco:26.00, controlarEstoque:true, estoque:50, estoqueMinimo:12},
+      {categoria:'Drinks & Coquetéis', nome:'Aperol Spritz', preco:28.00, controlarEstoque:true, estoque:40, estoqueMinimo:10},
+      {categoria:'Drinks & Coquetéis', nome:'Margarita', preco:25.00, controlarEstoque:true, estoque:40, estoqueMinimo:10},
+      {categoria:'Drinks & Coquetéis', nome:'Sex on the Beach', preco:24.00, controlarEstoque:true, estoque:40, estoqueMinimo:10},
+      {categoria:'Drinks & Coquetéis', nome:'Negroni', preco:27.00, controlarEstoque:true, estoque:35, estoqueMinimo:8},
+      // — Destilados (Doses) —
+      {categoria:'Destilados', nome:'Dose Whisky Red Label', preco:18.00, controlarEstoque:true, estoque:60, estoqueMinimo:12},
+      {categoria:'Destilados', nome:'Dose Whisky Black Label', preco:32.00, controlarEstoque:true, estoque:40, estoqueMinimo:8},
+      {categoria:'Destilados', nome:'Dose Vodka Absolut', preco:16.00, controlarEstoque:true, estoque:60, estoqueMinimo:12},
+      {categoria:'Destilados', nome:'Dose Gin Tanqueray', preco:22.00, controlarEstoque:true, estoque:50, estoqueMinimo:10},
+      {categoria:'Destilados', nome:'Dose Cachaça Artesanal', preco:12.00, controlarEstoque:true, estoque:80, estoqueMinimo:16},
+      {categoria:'Destilados', nome:'Dose Tequila José Cuervo', preco:20.00, controlarEstoque:true, estoque:50, estoqueMinimo:10},
+      // — Vinhos & Espumantes —
+      {categoria:'Vinhos & Espumantes', nome:'Taça Vinho Tinto Cabernet', preco:18.00, controlarEstoque:true, estoque:48, estoqueMinimo:12},
+      {categoria:'Vinhos & Espumantes', nome:'Garrafa Vinho Tinto Cabernet', preco:75.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      {categoria:'Vinhos & Espumantes', nome:'Taça Vinho Branco Chardonnay', preco:18.00, controlarEstoque:true, estoque:36, estoqueMinimo:10},
+      {categoria:'Vinhos & Espumantes', nome:'Espumante Brut (Garrafa)', preco:89.00, controlarEstoque:true, estoque:24, estoqueMinimo:6},
+      // — Não Alcoólicos —
+      {categoria:'Não Alcoólicos', nome:'Coca-Cola Lata 350ml', preco:7.00, controlarEstoque:true, estoque:200, estoqueMinimo:48},
+      {categoria:'Não Alcoólicos', nome:'Guaraná Antarctica Lata 350ml', preco:7.00, controlarEstoque:true, estoque:200, estoqueMinimo:48},
+      {categoria:'Não Alcoólicos', nome:'Água Mineral sem Gás 500ml', preco:5.00, controlarEstoque:true, estoque:240, estoqueMinimo:60},
+      {categoria:'Não Alcoólicos', nome:'Água com Gás 500ml', preco:6.00, controlarEstoque:true, estoque:120, estoqueMinimo:30},
+      {categoria:'Não Alcoólicos', nome:'Suco Natural de Laranja 400ml', preco:12.00, controlarEstoque:true, estoque:60, estoqueMinimo:15},
+      {categoria:'Não Alcoólicos', nome:'Energético Red Bull 250ml', preco:15.00, controlarEstoque:true, estoque:96, estoqueMinimo:24},
+      {categoria:'Não Alcoólicos', nome:'Água Tônica 350ml', preco:8.00, controlarEstoque:true, estoque:96, estoqueMinimo:24},
+      // — Petiscos —
+      {categoria:'Petiscos', nome:'Batata Frita com Cheddar e Bacon', preco:34.00, controlarEstoque:true, estoque:40, estoqueMinimo:10},
+      {categoria:'Petiscos', nome:'Mandioca Frita com Aioli', preco:28.00, controlarEstoque:true, estoque:40, estoqueMinimo:10},
+      {categoria:'Petiscos', nome:'Calabresa Acebolada', preco:32.00, controlarEstoque:true, estoque:35, estoqueMinimo:8},
+      {categoria:'Petiscos', nome:'Bolinho de Bacalhau (6 un)', preco:36.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      {categoria:'Petiscos', nome:'Isca de Frango Empanada', preco:34.00, controlarEstoque:true, estoque:35, estoqueMinimo:8},
+      {categoria:'Petiscos', nome:'Anéis de Cebola Empanados', preco:26.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      {categoria:'Petiscos', nome:'Dadinho de Tapioca (8 un)', preco:30.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      {categoria:'Petiscos', nome:'Pastel de Carne (6 un)', preco:28.00, controlarEstoque:true, estoque:35, estoqueMinimo:8},
+      // — Porções —
+      {categoria:'Porções', nome:'Porção de Frango a Passarinho', preco:45.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      {categoria:'Porções', nome:'Porção de Camarão Empanado', preco:69.00, controlarEstoque:true, estoque:20, estoqueMinimo:5},
+      {categoria:'Porções', nome:'Porção de Linguiça Artesanal', preco:42.00, controlarEstoque:true, estoque:25, estoqueMinimo:6},
+      {categoria:'Porções', nome:'Tábua de Frios e Queijos', preco:58.00, controlarEstoque:true, estoque:20, estoqueMinimo:5},
+      {categoria:'Porções', nome:'Porção de Filé com Fritas', preco:62.00, controlarEstoque:true, estoque:22, estoqueMinimo:6},
+      // — Pratos Executivos —
+      {categoria:'Pratos Executivos', nome:'Executivo de Filé à Parmegiana', preco:39.00, controlarEstoque:true, estoque:25, estoqueMinimo:6},
+      {categoria:'Pratos Executivos', nome:'Executivo de Frango Grelhado', preco:32.00, controlarEstoque:true, estoque:25, estoqueMinimo:6},
+      {categoria:'Pratos Executivos', nome:'Executivo de Picanha com Arroz', preco:45.00, controlarEstoque:true, estoque:22, estoqueMinimo:6},
+      {categoria:'Pratos Executivos', nome:'Executivo de Peixe Grelhado', preco:38.00, controlarEstoque:true, estoque:20, estoqueMinimo:5},
+      {categoria:'Pratos Executivos', nome:'Executivo Vegetariano', preco:30.00, controlarEstoque:true, estoque:18, estoqueMinimo:5},
+      // — Sanduíches & Lanches —
+      {categoria:'Sanduíches', nome:'Hambúrguer Artesanal 180g', preco:34.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      {categoria:'Sanduíches', nome:'X-Bacon Duplo', preco:38.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      {categoria:'Sanduíches', nome:'Sanduíche de Pernil', preco:28.00, controlarEstoque:true, estoque:28, estoqueMinimo:7},
+      {categoria:'Sanduíches', nome:'Misto Quente Especial', preco:18.00, controlarEstoque:true, estoque:30, estoqueMinimo:8},
+      // — Sobremesas —
+      {categoria:'Sobremesas', nome:'Petit Gateau com Sorvete', preco:26.00, controlarEstoque:true, estoque:20, estoqueMinimo:5},
+      {categoria:'Sobremesas', nome:'Pudim de Leite', preco:16.00, controlarEstoque:true, estoque:24, estoqueMinimo:6},
+      {categoria:'Sobremesas', nome:'Brownie com Sorvete', preco:22.00, controlarEstoque:true, estoque:20, estoqueMinimo:5},
+      {categoria:'Sobremesas', nome:'Mousse de Maracujá', preco:14.00, controlarEstoque:true, estoque:24, estoqueMinimo:6}
+    ].map(p => Object.assign({ disponibilidade: 'Disponível' }, p));
+
     const defaultState = {
       theme: 'dark',
       operacao: {
@@ -4596,6 +4687,19 @@ var qrcode = function() {
       if (!st || !st.operacao || !st.operacao.diaAberto || !st.operacao.dataOperacao) return st;
       const today = new Date().toLocaleDateString('sv-SE');
       if (st.operacao.dataOperacao === today) return st;
+      // BAR OPERA PASSANDO DA MEIA-NOITE: não fechar durante a madrugada da operação.
+      // Mesma regra do servidor: só fecha se for de 2+ dias atrás, OU de ontem e já passou das 6h
+      // (até lá, a noite ainda está ativa — o dia só fecha de verdade quando o gerente fecha).
+      const parts = String(st.operacao.dataOperacao).split('-');
+      if (parts.length === 3) {
+        const opDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0); opDate.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor((todayDate - opDate) / 86400000);
+        const currentHour = new Date().getHours();
+        if (diffDays <= 0) return st;                       // mesma data ou futura — não mexe
+        if (diffDays === 1 && currentHour < 6) return st;   // madrugada da noite ativa → MANTÉM ABERTO
+      }
       console.log('[Auto-fix] Dia obsoleto (' + st.operacao.dataOperacao + ') detectado. Fechando...');
       st.operacao.diaAberto = false;
       st.operacao.dataOperacao = null;
@@ -4782,6 +4886,7 @@ var qrcode = function() {
       // Sanitizações de dados legados / compatibilidade
       if (!appState.historicoComandas) appState.historicoComandas = [];
       if (!appState.caixa) appState.caixa = [];
+      if (!appState.recebimentos) appState.recebimentos = [];
       if (!appState.theme) appState.theme = 'dark';
       
       // Sanitizações para Controle de Turnos
@@ -4962,9 +5067,7 @@ var qrcode = function() {
       try {
         await saveCheckpoint(appState);
         renderCheckpointsList();
-        if (!isManual && !backupFolderHandle) {
-          showToast('Checkpoint salvo internamente (auto-backup)!', 'success');
-        }
+        // (toast de "checkpoint salvo internamente" removido — poluía a tela; backup segue silencioso)
       } catch (err) {
         console.error('Falha checkpoint interno:', err);
       }
@@ -5667,6 +5770,279 @@ var qrcode = function() {
           ? parados.slice(0, 30).map(i => `<div style="display:flex; justify-content:space-between; font-size:var(--text-sm);"><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${i.nome}</span><span class="muted" style="white-space:nowrap;">${i.categoria || ''}</span></div>`).join('')
           : '<small class="muted">Todos os produtos tiveram saída em 30 dias.</small>';
       }
+    }
+
+    // === RECEBIMENTO DE MERCADORIAS (entrada de estoque por NF — manual e XML) ===
+    var recebimentoXmlItens = [];
+    function escAttr(s) { return String(s == null ? '' : s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+    function nfeText(parent, name) { const el = parent.getElementsByTagNameNS('*', name)[0]; return el ? el.textContent.trim() : ''; }
+
+    function produtoSelectOptions(selecionado) {
+      let opts = '<option value="">— escolher produto —</option>';
+      (appState.cardapio || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || ''))
+        .forEach(p => { opts += `<option value="${escAttr(p.nome)}"${p.nome === selecionado ? ' selected' : ''}>${p.nome}</option>`; });
+      return opts;
+    }
+
+    function openRecebimentoModal() {
+      const body = `
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <button class="btn sm primary" id="recTabManual" onclick="switchRecebimentoTab('manual')">✍️ Lançar Manual</button>
+          <button class="btn sm" id="recTabXml" onclick="switchRecebimentoTab('xml')">📄 Importar XML (NF-e)</button>
+        </div>
+        <div id="recebimentoArea"></div>`;
+      openModal('📥 Receber Mercadoria (Entrada de Estoque)', body,
+        '<button class="btn" onclick="closeModal()">Fechar</button>');
+      switchRecebimentoTab('manual');
+    }
+
+    function switchRecebimentoTab(mode) {
+      const m = document.getElementById('recTabManual'), x = document.getElementById('recTabXml');
+      if (m && x) { m.className = 'btn sm' + (mode === 'manual' ? ' primary' : ''); x.className = 'btn sm' + (mode === 'xml' ? ' primary' : ''); }
+      const area = document.getElementById('recebimentoArea');
+      if (!area) return;
+      if (mode === 'manual') {
+        area.innerHTML = `
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+            <input id="recFornecedor" class="form-control" placeholder="Fornecedor (opcional)" style="flex:2; min-width:160px; margin:0;">
+            <input id="recNF" class="form-control" placeholder="Nº da Nota (opcional)" style="flex:1; min-width:120px; margin:0;">
+          </div>
+          <div id="recManualRows" style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;"></div>
+          <button class="btn sm" onclick="addRecebimentoRow()">+ Adicionar item</button>
+          <div style="margin-top:14px; text-align:right;">
+            <button class="btn primary" onclick="confirmRecebimentoManual()">Confirmar Entrada</button>
+          </div>`;
+        addRecebimentoRow();
+      } else {
+        recebimentoXmlItens = [];
+        area.innerHTML = `
+          <p class="muted" style="font-size:var(--text-sm); margin-bottom:10px;">Selecione o arquivo <strong>XML da NF-e</strong> de compra. Os itens serão lidos e você confirma a entrada no estoque.</p>
+          <input type="file" id="recXmlFile" accept=".xml" class="form-control" style="margin-bottom:12px;" onchange="handleRecebimentoXml(event)">
+          <div id="recXmlArea"></div>`;
+      }
+    }
+
+    function addRecebimentoRow() {
+      const c = document.getElementById('recManualRows');
+      if (!c) return;
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; gap:8px; align-items:center;';
+      row.innerHTML = `
+        <select class="form-control rec-prod" style="flex:2; min-width:140px; margin:0;">${produtoSelectOptions('')}</select>
+        <input type="number" class="form-control rec-qtd" placeholder="Qtd" min="1" step="1" style="width:90px; margin:0;">
+        <input type="number" class="form-control rec-custo" placeholder="Custo un. (opc)" min="0" step="0.01" style="width:130px; margin:0;">
+        <button class="btn sm danger" onclick="this.parentElement.remove()" title="Remover">✕</button>`;
+      c.appendChild(row);
+    }
+
+    function confirmRecebimentoManual() {
+      const fornecedor = (document.getElementById('recFornecedor') || {}).value || '';
+      const nf = (document.getElementById('recNF') || {}).value || '';
+      const rows = Array.from(document.querySelectorAll('#recManualRows > div'));
+      const itens = [];
+      rows.forEach(r => {
+        const nome = r.querySelector('.rec-prod').value;
+        const qtd = parseInt(r.querySelector('.rec-qtd').value, 10);
+        const custo = parseFloat(r.querySelector('.rec-custo').value) || 0;
+        if (nome && qtd > 0) itens.push({ nome, qtd, custoUnit: custo });
+      });
+      if (itens.length === 0) { showToast('Adicione ao menos um item com produto e quantidade.', 'warning'); return; }
+      aplicarRecebimento(itens, { fornecedor, nf, origem: 'manual' });
+    }
+
+    function handleRecebimentoXml(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        let doc;
+        try { doc = new DOMParser().parseFromString(e.target.result, 'application/xml'); } catch (err) { showToast('XML inválido.', 'error'); return; }
+        if (doc.getElementsByTagName('parsererror').length) { showToast('Não consegui ler o XML (formato inválido).', 'error'); return; }
+        const dets = Array.from(doc.getElementsByTagNameNS('*', 'det'));
+        if (dets.length === 0) { showToast('Nenhum produto encontrado no XML (é uma NF-e?).', 'error'); return; }
+        const emit = doc.getElementsByTagNameNS('*', 'emit')[0];
+        const ide = doc.getElementsByTagNameNS('*', 'ide')[0];
+        const fornecedor = emit ? nfeText(emit, 'xNome') : '';
+        const nf = ide ? nfeText(ide, 'nNF') : '';
+        const nomes = new Set((appState.cardapio || []).map(p => (p.nome || '').trim().toLowerCase()));
+        recebimentoXmlItens = dets.map(det => {
+          const prod = det.getElementsByTagNameNS('*', 'prod')[0];
+          if (!prod) return null;
+          const xProd = nfeText(prod, 'xProd');
+          const qtd = Math.round(parseFloat(nfeText(prod, 'qCom') || nfeText(prod, 'qTrib') || '0')) || 0;
+          const vUn = parseFloat(nfeText(prod, 'vUnCom') || nfeText(prod, 'vUnTrib') || '0') || 0;
+          const match = (appState.cardapio || []).find(p => (p.nome || '').trim().toLowerCase() === xProd.trim().toLowerCase());
+          return { xProd, qtd, vUn, mapTo: match ? match.nome : '__novo__' };
+        }).filter(Boolean);
+        renderRecebimentoXmlItens(fornecedor, nf);
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function renderRecebimentoXmlItens(fornecedor, nf) {
+      const area = document.getElementById('recXmlArea');
+      if (!area) return;
+      const linhas = recebimentoXmlItens.map((it, i) => `
+        <tr>
+          <td style="padding:6px; font-size:12px;">${it.xProd}</td>
+          <td style="padding:6px;"><input type="number" value="${it.qtd}" min="0" step="1" style="width:70px;" onchange="recebimentoXmlItens[${i}].qtd=parseInt(this.value)||0" class="form-control"></td>
+          <td style="padding:6px; font-size:12px; text-align:right;">${money(it.vUn)}</td>
+          <td style="padding:6px;">
+            <select class="form-control" style="min-width:150px;" onchange="recebimentoXmlItens[${i}].mapTo=this.value">
+              <option value="__novo__"${it.mapTo === '__novo__' ? ' selected' : ''}>+ Criar novo produto</option>
+              <option value="__ignorar__"${it.mapTo === '__ignorar__' ? ' selected' : ''}>Ignorar</option>
+              ${produtoSelectOptions(it.mapTo !== '__novo__' && it.mapTo !== '__ignorar__' ? it.mapTo : '')}
+            </select>
+          </td>
+        </tr>`).join('');
+      area.innerHTML = `
+        <div style="font-size:var(--text-sm); margin-bottom:8px;"><strong>Fornecedor:</strong> ${fornecedor || '—'} &nbsp; <strong>NF:</strong> ${nf || '—'}</div>
+        <div style="max-height:300px; overflow:auto; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+          <table style="width:100%; border-collapse:collapse;">
+            <thead><tr style="background:var(--color-surface-offset); position:sticky; top:0;">
+              <th style="padding:6px; text-align:left; font-size:11px;">Produto (XML)</th>
+              <th style="padding:6px; text-align:left; font-size:11px;">Qtd</th>
+              <th style="padding:6px; text-align:right; font-size:11px;">Custo un.</th>
+              <th style="padding:6px; text-align:left; font-size:11px;">Vincular a</th>
+            </tr></thead>
+            <tbody>${linhas}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:14px; text-align:right;">
+          <button class="btn primary" onclick="confirmRecebimentoXml('${escAttr(fornecedor)}','${escAttr(nf)}')">Confirmar Entrada (${recebimentoXmlItens.length} itens)</button>
+        </div>`;
+    }
+
+    function confirmRecebimentoXml(fornecedor, nf) {
+      const itens = [];
+      recebimentoXmlItens.forEach(it => {
+        if (it.mapTo === '__ignorar__' || it.qtd <= 0) return;
+        if (it.mapTo === '__novo__') {
+          itens.push({ novo: true, nome: it.xProd, qtd: it.qtd, custoUnit: it.vUn });
+        } else if (it.mapTo) {
+          itens.push({ nome: it.mapTo, qtd: it.qtd, custoUnit: it.vUn });
+        }
+      });
+      if (itens.length === 0) { showToast('Nenhum item para dar entrada (todos ignorados?).', 'warning'); return; }
+      aplicarRecebimento(itens, { fornecedor, nf, origem: 'xml' });
+    }
+
+    // Aplica a entrada: incrementa estoque (cria produto novo se preciso) e registra a NF.
+    function aplicarRecebimento(itens, meta) {
+      if (!appState.cardapio) appState.cardapio = [];
+      if (!appState.recebimentos) appState.recebimentos = [];
+      let total = 0, criados = 0;
+      const registro = [];
+      itens.forEach(it => {
+        total += (it.custoUnit || 0) * it.qtd;
+        let prod = appState.cardapio.find(p => (p.nome || '').trim().toLowerCase() === it.nome.trim().toLowerCase());
+        if (!prod && it.novo) {
+          prod = { categoria: 'Recebidos', nome: it.nome, preco: it.custoUnit || 0, disponibilidade: 'Disponível', controlarEstoque: true, estoque: 0, estoqueMinimo: 0 };
+          appState.cardapio.push(prod); criados++;
+        }
+        if (!prod) return;
+        prod.controlarEstoque = true;
+        prod.estoque = (Number(prod.estoque) || 0) + it.qtd;
+        prod.estoqueAtual = prod.estoque;
+        registro.push({ nome: prod.nome, qtd: it.qtd, custoUnit: it.custoUnit || 0 });
+      });
+      appState.recebimentos.push({
+        id: Date.now(), data: new Date().toISOString(),
+        fornecedor: meta.fornecedor || '', nf: meta.nf || '', origem: meta.origem || 'manual',
+        total: total, itens: registro
+      });
+      saveState();
+      if (typeof renderEstoque === 'function') renderEstoque();
+      if (typeof renderCardapio === 'function') renderCardapio();
+      closeModal();
+      showToast('Entrada registrada! ' + registro.length + ' itens no estoque' + (criados ? (', ' + criados + ' novos criados') : '') + '. ✅', 'success');
+    }
+
+    function carregarCardapioModelo() {
+      if (!appState.cardapio) appState.cardapio = [];
+      const existentes = new Set(appState.cardapio.map(p => (p.nome || '').trim().toLowerCase()));
+      const novos = MENU_MODELO.filter(p => !existentes.has(p.nome.trim().toLowerCase()));
+      if (novos.length === 0) {
+        showToast('O cardápio modelo já está todo cadastrado.', 'info');
+        return;
+      }
+      if (!confirm('Adicionar ' + novos.length + ' itens do cardápio modelo (com estoque pré-definido)? Itens já existentes não serão duplicados.')) return;
+      novos.forEach(p => appState.cardapio.push(JSON.parse(JSON.stringify(p))));
+      saveState();
+      if (typeof renderCardapio === 'function') renderCardapio();
+      if (typeof renderEstoque === 'function') renderEstoque();
+      showToast(novos.length + ' itens adicionados ao cardápio com estoque! ✅', 'success');
+    }
+
+    function imprimirEstoque() {
+      const cardapio = (appState && appState.cardapio) || [];
+      const controlados = cardapio.filter(p => p.controlarEstoque);
+      const est = appState.estabelecimento || {};
+      const logoHtml = est.logo ? '<img src="' + est.logo + '" style="max-width:80px;">' : '';
+      const nomeFantasia = est.nomeFantasia || 'BarFlow OS';
+      const agora = new Date();
+      const dataHora = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      let valorImobilizado = 0, qtdEsgotados = 0, qtdAlertas = 0;
+      const linhas = controlados.map(p => {
+        const qtd = Number(p.estoque) || 0;
+        const min = Number(p.estoqueMinimo) || 0;
+        const preco = Number(p.preco) || 0;
+        valorImobilizado += qtd * preco;
+        let status, cor;
+        if (qtd <= 0) { status = 'ESGOTADO'; cor = '#c0392b'; qtdEsgotados++; }
+        else if (qtd <= min) { status = 'ALERTA'; cor = '#e67e22'; qtdAlertas++; }
+        else { status = 'OK'; cor = '#27ae60'; }
+        return `<tr>
+          <td>${p.nome || '-'}</td>
+          <td>${p.categoria || '-'}</td>
+          <td style="text-align:center;">${qtd}</td>
+          <td style="text-align:center;">${min}</td>
+          <td style="text-align:right;">${money(preco)}</td>
+          <td style="text-align:right;">${money(qtd * preco)}</td>
+          <td style="text-align:center; color:${cor}; font-weight:bold;">${status}</td>
+        </tr>`;
+      }).join('');
+
+      if (controlados.length === 0) {
+        showToast('Nenhum produto com controle de estoque habilitado para imprimir.', 'warning');
+        return;
+      }
+      const printWindow = window.open('', '_blank', 'width=800,height=900');
+      if (!printWindow) { showToast('Bloqueador de pop-ups ativo! Permita pop-ups para imprimir.', 'error'); return; }
+      printWindow.document.write(`
+        <!DOCTYPE html><html><head><title>Relatório de Estoque</title><meta charset="utf-8"><style>
+          body { font-family: system-ui, -apple-system, sans-serif; color:#000; padding:20px; line-height:1.4; }
+          .header { text-align:center; margin-bottom:18px; }
+          .header h2 { margin:5px 0; }
+          .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px; }
+          .card { border:1px solid #ccc; padding:10px; border-radius:6px; text-align:center; }
+          .card span { font-size:11px; color:#666; display:block; margin-bottom:4px; }
+          .card h3 { margin:0; font-size:16px; }
+          table { width:100%; border-collapse:collapse; margin-top:8px; }
+          th, td { padding:7px; border-bottom:1px solid #ddd; text-align:left; font-size:13px; }
+          th { background:#f5f5f5; }
+          @media print { body { padding:0; } }
+        </style></head><body>
+          <div class="header">${logoHtml}<h2>${nomeFantasia}</h2>
+            <div style="font-size:14px; font-weight:bold; margin-top:5px;">RELATÓRIO DE CONTROLE DE ESTOQUE</div>
+            <div style="font-size:12px; color:#666;">Emitido em ${dataHora}</div>
+          </div>
+          <div class="kpi-grid">
+            <div class="card"><span>Itens controlados</span><h3>${controlados.length}</h3></div>
+            <div class="card"><span>Em alerta</span><h3 style="color:#e67e22;">${qtdAlertas}</h3></div>
+            <div class="card"><span>Esgotados</span><h3 style="color:#c0392b;">${qtdEsgotados}</h3></div>
+            <div class="card"><span>Valor imobilizado</span><h3 style="color:#27ae60;">${money(valorImobilizado)}</h3></div>
+          </div>
+          <table><thead><tr>
+            <th>Produto</th><th>Categoria</th><th style="text-align:center;">Atual</th>
+            <th style="text-align:center;">Mínimo</th><th style="text-align:right;">Preço</th>
+            <th style="text-align:right;">Total</th><th style="text-align:center;">Status</th>
+          </tr></thead><tbody>${linhas}</tbody></table>
+          <div style="text-align:center; font-size:11px; color:#888; margin-top:24px;">BarFlow OS — Gestão para Bares e Restaurantes</div>
+          <script>window.onload = function(){ window.print(); setTimeout(function(){ window.close(); }, 500); };<\/script>
+        </body></html>`);
+      printWindow.document.close();
     }
 
     function renderEstoque() {
@@ -6477,6 +6853,48 @@ var qrcode = function() {
         <div style="background:#fff; padding:14px; border-radius:12px; display:inline-block; width:240px; height:240px;">${svg}</div>
         <p style="margin-top:14px; font-size:var(--text-sm); font-weight:700;">Aponte a câmera do celular</p>
         <p class="muted" style="font-size:var(--text-xs); margin-top:4px;">O cliente vê o cardápio pela rede Wi-Fi local — sem internet.</p>
+        <p class="muted" style="font-size:var(--text-xs); margin-top:8px; word-break:break-all;">${url}</p>`;
+    }
+
+    // QR de acesso do garçom/cozinha: aponta pro IP:porta ATUAL do servidor (descoberta),
+    // então funciona mesmo se a porta tiver caído de 8080 p/ outra (resiliência).
+    async function buildAccessUrl() {
+      if (typeof location !== 'undefined' && location.hostname.includes('github.io')) return null;
+      try {
+        const r = await fetch('/api/lan');
+        if (r.ok) { const d = await r.json(); if (d && d.ip) return `${location.protocol}//${d.ip}:${d.port || 8080}/`; }
+      } catch (_) {}
+      const isNet = typeof location !== 'undefined' && location.protocol.startsWith('http') &&
+        location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
+      if (isNet) return location.origin + '/';
+      return null;
+    }
+
+    async function openQrAcessoModal() {
+      openModal('📲 QR de Acesso (Garçom / Cozinha)',
+        '<div id="qrAcessoBody" style="text-align:center; padding:10px;"><small class="muted">Gerando QR Code...</small></div>',
+        '<button class="btn" onclick="closeModal()">Fechar</button>');
+      const url = await buildAccessUrl();
+      const target = document.getElementById('qrAcessoBody');
+      if (!target) return;
+      if (!url) {
+        target.innerHTML = '<small class="muted">Disponível só no modo cliente (servidor local ativo).</small>';
+        return;
+      }
+      let svg = '';
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(url);
+        qr.make();
+        svg = qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true });
+      } catch (e) {
+        target.innerHTML = '<small class="muted">Falha ao gerar o QR: ' + e.message + '</small>';
+        return;
+      }
+      target.innerHTML = `
+        <div style="background:#fff; padding:14px; border-radius:12px; display:inline-block; width:240px; height:240px;">${svg}</div>
+        <p style="margin-top:14px; font-size:var(--text-sm); font-weight:700;">Garçom/cozinha: aponte a câmera</p>
+        <p class="muted" style="font-size:var(--text-xs); margin-top:4px;">Abre o sistema já no endereço certo, mesmo se a porta mudou. Conecte o aparelho ao Wi-Fi do bar.</p>
         <p class="muted" style="font-size:var(--text-xs); margin-top:8px; word-break:break-all;">${url}</p>`;
     }
 
@@ -9019,6 +9437,40 @@ var qrcode = function() {
 
       renderDiagnostico();
       renderPrinterConfig();
+      renderDbBackupStatus();
+    }
+
+    // === BACKUP DO BANCO — status real (server-side) ===
+    async function renderDbBackupStatus() {
+      const body = document.getElementById('dbBackupStatusBody');
+      const badge = document.getElementById('dbBackupBadge');
+      if (!body) return;
+      if (!isHttp || isDemo) {
+        if (badge) { badge.textContent = 'modo local'; badge.style.color = 'var(--color-text-muted)'; }
+        body.innerHTML = '<small class="muted">Status do backup do banco aparece no modo cliente (servidor ativo).</small>';
+        return;
+      }
+      let h = null;
+      try { h = await (await fetch('/api/backup-status', { cache: 'no-store' })).json(); } catch (e) {}
+      if (!h) {
+        if (badge) { badge.textContent = 'indisponível'; badge.style.color = 'var(--color-danger, #e74c3c)'; }
+        body.innerHTML = '<small class="muted">Não consegui obter o status do backup.</small>';
+        return;
+      }
+      const fmt = (iso) => { try { return new Date(iso).toLocaleString('pt-BR'); } catch (e) { return '-'; } };
+      const kb = h.dbSize ? Math.max(1, Math.round(h.dbSize / 1024)) + ' KB' : '-';
+      if (badge) {
+        if (h.dbExists) { badge.textContent = '✓ Protegido'; badge.style.color = 'var(--color-success, #5fa838)'; badge.style.background = 'rgba(95,168,56,0.15)'; }
+        else { badge.textContent = '✗ Sem banco'; badge.style.color = 'var(--color-danger, #e74c3c)'; badge.style.background = 'rgba(231,76,60,0.15)'; }
+      }
+      body.innerHTML =
+        '<div style="display:flex; flex-direction:column; gap:4px; font-size:var(--text-sm);">'
+        + '<div><strong>Banco atual:</strong> ' + (h.dbExists ? ('salvo (' + kb + ') — atualizado ' + fmt(h.dbModified)) : 'NÃO encontrado') + '</div>'
+        + '<div><strong>Cópias de segurança:</strong> ' + (h.backupCount || 0) + ' (criptografadas, rotativas)</div>'
+        + (h.lastBackup ? '<div><strong>Última cópia:</strong> ' + fmt(h.lastBackup) + '</div>'
+                        : '<div class="muted">A 1ª cópia rotativa sai após ~5 min de movimento no dia.</div>')
+        + '<div class="muted" style="font-size:var(--text-xs); word-break:break-all; margin-top:2px;">Local: ' + (h.dir || '') + '</div>'
+        + '</div>';
     }
 
     // === IMPRESSÃO DA COZINHA — configuração da impressora (servidor) ===
